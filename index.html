@@ -6,8 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- Konfigurasi PWA & Layar Penuh -->
-  <link rel="manifest" href="manifest.json">
+  <!-- URL Gambar Langsung dari ID Google Drive: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno -->
+  <!-- Konfigurasi Favicon dan Icon Instalasi Chrome / Android / iOS -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="shortcut icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" type="image/x-icon">
+
+  <!-- Manifest Web Terintegrasi dengan Logo Google Drive -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +28,7 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      /* Mencegah gesture zoom bawaan peramban */
+      /* Mencegah gesture zoom bawaan browser */
       touch-action: pan-x pan-y;
     }
     
@@ -28,7 +36,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      position: fixed; /* Mencegah scroll overscroll/bounce yang memicu zoom */
+      position: fixed; /* Mencegah overscroll bounce */
       background-color: #0f172a;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-text-size-adjust: 100%;
@@ -61,10 +69,19 @@
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
+    .loader-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      object-fit: contain;
+    }
+
     .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid rgba(255, 255, 255, 0.15);
+      width: 44px;
+      height: 44px;
+      border: 3.5px solid rgba(255, 255, 255, 0.15);
       border-top-color: #38bdf8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -85,8 +102,13 @@
 </head>
 <body>
 
-  <!-- Layar Pembuka / Loading -->
+  <!-- Layar Pembuka / Loading dengan Logo Bisnis -->
   <div id="loader">
+    <img 
+      src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
+      alt="Velocity Logo" 
+      class="loader-logo"
+      onerror="this.style.display='none'">
     <div class="spinner"></div>
     <div class="loader-text">Memuat Velocity Kasir...</div>
   </div>
@@ -147,12 +169,12 @@
       }
     }, { passive: false });
 
-    // Registrasi Service Worker PWA
+    // Registrasi Service Worker PWA (jika file sw.js tersedia)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('Service Worker Velocity Kasir Aktif:', reg.scope))
-          .catch(err => console.error('SW Registrasi Gagal:', err));
+          .catch(err => console.warn('SW Registrasi (opsional):', err));
       });
     }
   </script>
