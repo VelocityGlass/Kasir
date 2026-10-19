@@ -2,32 +2,47 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Viewport tetap 1.0, kunci zoom untuk pengalaman aplikasi native -->
+  <!-- Kunci viewport: Skala tetap 1.0, anti-zoom untuk nuansa aplikasi native -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- 
-    Favicon & Apple Touch Icon dengan margin aman (safe-zone 15%)
-    Menggunakan gambar logo asli Google Drive (ID: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno) 
-    yang dibungkus dalam kanvas SVG putih agar logo & tulisan tidak pernah terpotong.
-  -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='40' y='40' width='432' height='432' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
-
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='40' y='40' width='432' height='432' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
-
-  <!-- 
-    Web App Manifest Inline (Data URI)
-    Mengunci Chrome Android agar langsung mengambil logo Velocity ber-padding aman 
-    dan TIDAK beralih ke favicon default orang berdasi bawaan Google Script!
-  -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20rx%3D'110'%20fill%3D'%2523ffffff'%2F%253E%253Cimage%20href%3D'https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'%20x%3D'40'%20y%3D'40'%20width%3D'432'%20height%3D'432'%20preserveAspectRatio%3D'xMidYMid%20meet'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
-
-  <!-- Konfigurasi Tema UI Browser -->
+  <!-- Warna Tema & Status Bar disesuaikan ke #00454f -->
   <meta name="theme-color" content="#00454f">
+  <meta name="msapplication-navbutton-color" content="#00454f">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#00454f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Velocity Kasir">
+
+  <!-- Direct URL thumbnail Google Drive untuk logo aplikasi -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+
+  <!-- Manifest PWA disematkan langsung (Data URI) agar ikon Chrome terpasang otomatis -->
+  <link rel="manifest" href='data:application/manifest+json,{
+    "name": "Velocity Kasir",
+    "short_name": "Velocity",
+    "start_url": "./",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#00454f",
+    "theme_color": "#00454f",
+    "icons": [
+      {
+        "src": "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  }'>
 
   <style>
     * {
@@ -43,9 +58,11 @@
       height: 100%;
       overflow: hidden;
       position: fixed;
-      background-color: #00454f;
+      background-color: #00454f; /* Tema Latar Utama */
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      text-size-adjust: 100%;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -59,11 +76,10 @@
       touch-action: pan-x pan-y;
     }
 
-    /* Layar Splash Elegan dengan transisi halus */
     #loader {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #005a67 0%, #00454f 65%, #002b31 100%);
+      background-color: #00454f;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -71,80 +87,52 @@
       color: #ffffff;
       z-index: 99999;
       transition: opacity 0.4s ease, visibility 0.4s ease;
-      padding: 24px;
     }
 
-    /* Wadah Logo: Diberi margin dan padding proporsional agar gambar tidak terpotong */
-    .logo-badge {
-      width: 150px;
-      height: 150px;
-      background: #ffffff;
-      border-radius: 36px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2);
-      margin-bottom: 24px;
-      animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .logo-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      border-radius: 12px;
+    .brand-logo {
+      width: 82px;
+      height: 82px;
+      border-radius: 20px;
+      object-fit: cover;
+      margin-bottom: 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.15);
     }
 
     .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3.5px solid rgba(255, 255, 255, 0.18);
+      width: 44px;
+      height: 44px;
+      border: 3.5px solid rgba(255, 255, 255, 0.2);
       border-top-color: #38bdf8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
-    .loader-title {
-      font-size: 19px;
-      font-weight: 700;
+    .loader-text {
+      font-size: 15px;
+      font-weight: 500;
       letter-spacing: 0.5px;
-      color: #ffffff;
-      margin-bottom: 4px;
-    }
-
-    .loader-subtitle {
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.2px;
-      color: #94d2bd;
+      color: #e2e8f0;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-
-    @keyframes zoomIn {
-      0% { opacity: 0; transform: scale(0.85); }
-      100% { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 <body>
 
   <div id="loader">
-    <div class="logo-badge">
-      <img 
-        src="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w512" 
-        alt="Velocity Glass Logo" 
-        class="logo-img"
-        onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno';">
-    </div>
+    <!-- Pratinjau logo saat aplikasi sedang memuat -->
+    <img 
+      class="brand-logo" 
+      src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
+      alt="Logo Velocity Kasir"
+      onerror="this.style.display='none'"
+    />
     <div class="spinner"></div>
-    <div class="loader-title">Velocity Kasir</div>
-    <div class="loader-subtitle">Menyiapkan sistem transaksi...</div>
+    <div class="loader-text">Memuat Velocity Kasir...</div>
   </div>
 
   <iframe 
@@ -164,37 +152,50 @@
       }
     }
 
-    // Batas waktu maksimal loader 6 detik
+    // Fallback otomatis loader jika koneksi lambat
     setTimeout(hideLoader, 6000);
 
-    // 1. Blokir multi-touch zoom
+    // 1. Blokir Pinch-to-Zoom (Sentuhan lebih dari 1 jari)
     document.addEventListener('touchstart', function (e) {
-      if (e.touches.length > 1) e.preventDefault();
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
     }, { passive: false });
 
-    // 2. Blokir gestur zoom bawaan iOS
-    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
-    document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
-    document.addEventListener('gestureend', function (e) { e.preventDefault(); });
+    // 2. Blokir Gestur Skala Bawaan iOS Safari & Chrome Touch
+    document.addEventListener('gesturestart', function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener('gesturechange', function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener('gestureend', function (e) {
+      e.preventDefault();
+    });
 
-    // 3. Blokir double tap zoom
+    // 3. Blokir Double-Tap Zoom (Ketukan ganda cepat)
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
       const now = Date.now();
-      if (now - lastTouchEnd <= 300) e.preventDefault();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
       lastTouchEnd = now;
     }, { passive: false });
 
-    // 4. Blokir zoom roda mouse / touchpad
+    // 4. Blokir Ctrl + Scroll Wheel (Zoom via mouse/trackpad laptop)
     document.addEventListener('wheel', function (e) {
-      if (e.ctrlKey) e.preventDefault();
+      if (e.ctrlKey) {
+        e.preventDefault();
+      }
     }, { passive: false });
 
-    // 5. Registrasi Service Worker PWA
+    // Registrasi Service Worker PWA (jika sw.js tersedia di server)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .catch(err => console.log('SW Note:', err));
+          .then(reg => console.log('Service Worker Velocity Kasir Aktif:', reg.scope))
+          .catch(err => console.log('SW registration note:', err.message));
       });
     }
   </script>
