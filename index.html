@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- Favicon & Apple Touch Icon dengan Padding Aman -->
-  <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='64' y='64' width='384' height='384' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
-  <link id="apple-icon" rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <!-- Favicon & Touch Icon Langsung (Direct CDN Image) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w192">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w512">
 
-  <!-- Manifest Web PWA dengan padding safe-zone agar tidak terpotong squircle/lingkaran -->
-  <link id="manifest-tag" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20fill%3D'%2523ffffff'%2F%253E%253Cimage%20href%3D'https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'%20x%3D'72'%20y%3D'72'%20width%3D'368'%20height%3D'368'%20preserveAspectRatio%3D'xMidYMid%20meet'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <!-- Manifest Web PWA Standar Chrome Android -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fdrive.google.com%2Fthumbnail%3Fid%3D1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%26sz%3Dw192%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fdrive.google.com%2Fthumbnail%3Fid%3D1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%26sz%3Dw512%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
 
   <meta name="theme-color" content="#00454f">
   <meta name="mobile-web-app-capable" content="yes">
@@ -135,10 +135,10 @@
   <div id="loader">
     <div class="logo-container">
       <img 
-        src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
+        src="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w512" 
         alt="Velocity Glass Logo" 
         class="loader-logo"
-        onerror="this.parentElement.style.display='none'">
+        onerror="this.src='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'">
     </div>
     <div class="spinner"></div>
     <div class="loader-title">Velocity Kasir</div>
@@ -165,42 +165,6 @@
 
     // Fallback loader jika jaringan lambat
     setTimeout(hideLoader, 6000);
-
-    // Render icon dengan padding aman otomatis via Canvas
-    function generatePaddedIcon(imgSrc) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = function() {
-        const size = 512;
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-
-        // Latar belakang putih bersih
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, size, size);
-
-        // Safe zone padding (margin 16% di setiap sisi)
-        const padding = size * 0.16;
-        const drawWidth = size - (padding * 2);
-        const drawHeight = (img.naturalHeight / img.naturalWidth) * drawWidth;
-        const drawY = (size - drawHeight) / 2;
-
-        ctx.drawImage(img, padding, drawY, drawWidth, drawHeight);
-
-        try {
-          const dataUrl = canvas.toDataURL('image/png');
-          const appleIcon = document.getElementById('apple-icon');
-          if (appleIcon) appleIcon.href = dataUrl;
-        } catch (e) {
-          console.warn('Canvas export skipped:', e);
-        }
-      };
-      img.src = imgSrc;
-    }
-
-    generatePaddedIcon('https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno');
 
     // 1. Blokir Pinch-to-Zoom (Sentuhan lebih dari 1 jari)
     document.addEventListener('touchstart', function (e) {
