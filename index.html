@@ -2,24 +2,25 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <!-- Kunci viewport: Skala tetap 1.0, minimum 1.0, maksimum 1.0, user-scalable=no -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- Warna Tema & Status Bar #00454f -->
-  <meta name="theme-color" content="#00454f">
-  <meta name="msapplication-navbutton-color" content="#00454f">
-  <meta name="apple-mobile-web-app-status-bar-style" content="#00454f">
+  <!-- URL Gambar Langsung dari ID Google Drive: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno -->
+  <!-- Konfigurasi Favicon dan Icon Instalasi Chrome / Android / iOS -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <link rel="shortcut icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" type="image/x-icon">
+
+  <!-- Manifest Web Terintegrasi dengan Logo Google Drive -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+
+  <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Velocity Kasir">
-
-  <!-- Favicon dan Apple Touch Icon -->
-  <link rel="icon" type="image/png" sizes="192x192" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-
-  <!-- Manifest PWA akan di-generate otomatis via Blob URL oleh script agar valid di semua browser -->
-  <link id="manifest-link" rel="manifest">
 
   <style>
     * {
@@ -27,6 +28,7 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      /* Mencegah gesture zoom bawaan browser */
       touch-action: pan-x pan-y;
     }
     
@@ -34,8 +36,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      position: fixed;
-      background-color: #00454f;
+      position: fixed; /* Mencegah overscroll bounce */
+      background-color: #0f172a;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
@@ -49,15 +51,15 @@
       height: 100vh;
       border: none;
       display: block;
-      background-color: #00454f;
+      background-color: #0f172a;
       touch-action: pan-x pan-y;
     }
 
-    /* Screen Loading / Splash Screen */
+    /* Loading Screen Animasi Halus */
     #loader {
       position: fixed;
       inset: 0;
-      background-color: #00454f;
+      background: #0f172a;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -67,114 +69,51 @@
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
-    .brand-logo {
-      width: 82px;
-      height: 82px;
+    .loader-logo {
+      width: 80px;
+      height: 80px;
       border-radius: 20px;
-      object-fit: cover;
       margin-bottom: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-      border: 2px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      object-fit: contain;
     }
 
     .spinner {
-      width: 42px;
-      height: 42px;
-      border: 3.5px solid rgba(255, 255, 255, 0.2);
+      width: 44px;
+      height: 44px;
+      border: 3.5px solid rgba(255, 255, 255, 0.15);
       border-top-color: #38bdf8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .loader-text {
       font-size: 15px;
       font-weight: 500;
       letter-spacing: 0.5px;
-      color: #e2e8f0;
+      color: #cbd5e1;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
-    /* Tombol / Banner Download PWA Mengambang */
-    #install-banner {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #002d33;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      padding: 10px 16px;
-      border-radius: 30px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-      z-index: 99998;
-      align-items: center;
-      gap: 12px;
-      animation: floatUp 0.3s ease-out;
-    }
-
-    @keyframes floatUp {
-      from { transform: translate(-50%, 20px); opacity: 0; }
-      to { transform: translate(-50%, 0); opacity: 1; }
-    }
-
-    .btn-install {
-      background: #38bdf8;
-      color: #002d33;
-      font-weight: 700;
-      font-size: 13px;
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-close {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 0 4px;
-      line-height: 1;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Layar Splash / Loader Awal -->
+  <!-- Layar Pembuka / Loading dengan Logo Bisnis -->
   <div id="loader">
     <img 
-      class="brand-logo" 
       src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
-      alt="Logo Velocity Kasir"
-      onerror="this.style.display='none'"
-    />
+      alt="Velocity Logo" 
+      class="loader-logo"
+      onerror="this.style.display='none'">
     <div class="spinner"></div>
     <div class="loader-text">Memuat Velocity Kasir...</div>
   </div>
 
-  <!-- Tombol Aksi Download / Install Cepat -->
-  <div id="install-banner">
-    <span style="color: #ffffff; font-size: 13px; font-weight: 500;">Pasang Aplikasi Kasir</span>
-    <button class="btn-install" id="btn-install-app">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="7 10 12 15 17 10"></polyline>
-        <line x1="12" y1="15" x2="12" y2="3"></line>
-      </svg>
-      Install
-    </button>
-    <button class="btn-close" id="btn-close-banner" aria-label="Tutup">&times;</button>
-  </div>
-
-  <!-- Iframe Google Apps Script Utama -->
+  <!-- Iframe Aplikasi Google Apps Script -->
   <iframe 
     id="app-frame" 
     src="https://script.google.com/macros/s/AKfycbxKlUnTTVgB98_33wBQpX6oHPpQOio9CFo42kDY19sUK3bMCU6R0N6kCmoWizeipeyQ/exec" 
@@ -183,118 +122,6 @@
   </iframe>
 
   <script>
-    // 1. GENERATE VALID MANIFEST VIA BLOB URL
-    const iconUrl = "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno";
-    const manifestData = {
-      name: "Velocity Kasir",
-      short_name: "Velocity",
-      start_url: window.location.href,
-      id: window.location.href,
-      display: "standalone",
-      orientation: "portrait",
-      background_color: "#00454f",
-      theme_color: "#00454f",
-      icons: [
-        {
-          src: iconUrl,
-          sizes: "192x192",
-          type: "image/png",
-          purpose: "any"
-        },
-        {
-          src: iconUrl,
-          sizes: "512x512",
-          type: "image/png",
-          purpose: "any"
-        },
-        {
-          src: iconUrl,
-          sizes: "512x512",
-          type: "image/png",
-          purpose: "maskable"
-        }
-      ]
-    };
-
-    try {
-      const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
-      const manifestUrl = URL.createObjectURL(manifestBlob);
-      document.getElementById('manifest-link').setAttribute('href', manifestUrl);
-    } catch (e) {
-      console.warn('Manifest Blob fallback:', e);
-    }
-
-    // 2. INLINE SERVICE WORKER
-    // Syarat wajib Google Chrome untuk memicu tombol Install PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const swScript = `
-          const CACHE_NAME = 'velocity-kasir-v1';
-          self.addEventListener('install', (event) => {
-            self.skipWaiting();
-          });
-          self.addEventListener('activate', (event) => {
-            event.waitUntil(clients.claim());
-          });
-          self.addEventListener('fetch', (event) => {
-            event.respondWith(
-              fetch(event.request).catch(() => caches.match(event.request))
-            );
-          });
-        `;
-        const swBlob = new Blob([swScript], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(swBlob);
-
-        navigator.serviceWorker.register(swUrl)
-          .then(reg => console.log('Service Worker Velocity Kasir Siap.'))
-          .catch(() => {
-            // Jika Blob SW dibatasi oleh CSP browser, fallback register sw.js biasa
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
-          });
-      });
-    }
-
-    // 3. LOGIKA TOMBOL INSTALL (BEFOREINSTALLPROMPT)
-    let deferredPrompt = null;
-    const banner = document.getElementById('install-banner');
-    const btnInstall = document.getElementById('btn-install-app');
-    const btnClose = document.getElementById('btn-close-banner');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Mencegah mini-infobar default Chrome muncul duluan
-      e.preventDefault();
-      deferredPrompt = e;
-      // Tampilkan banner download custom kita
-      if (banner) banner.style.display = 'flex';
-    });
-
-    if (btnInstall) {
-      btnInstall.addEventListener('click', async () => {
-        if (!deferredPrompt) {
-          // Jika event prompt belum tersedia, beri petunjuk manual
-          alert("Gunakan menu titik tiga (⋮) di Chrome lalu pilih 'Install aplikasi' atau 'Tambahkan ke Layar Utama'.");
-          return;
-        }
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`Pilihan user: ${outcome}`);
-        deferredPrompt = null;
-        banner.style.display = 'none';
-      });
-    }
-
-    if (btnClose) {
-      btnClose.addEventListener('click', () => {
-        banner.style.display = 'none';
-      });
-    }
-
-    window.addEventListener('appinstalled', () => {
-      console.log('Velocity Kasir berhasil di-install!');
-      if (banner) banner.style.display = 'none';
-    });
-
-    // 4. HIDE LOADER
     function hideLoader() {
       const loader = document.getElementById('loader');
       if (loader) {
@@ -303,19 +130,29 @@
         setTimeout(() => loader.remove(), 400);
       }
     }
+
+    // Fallback loader jika jaringan lambat
     setTimeout(hideLoader, 6000);
 
-    // 5. ANTI-ZOOM & NATIVE TOUCH CONTROLS
+    // 1. Blokir Pinch-to-Zoom (Sentuhan lebih dari 1 jari)
     document.addEventListener('touchstart', function (e) {
       if (e.touches.length > 1) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
-    document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
-    document.addEventListener('gestureend', function (e) { e.preventDefault(); });
+    // 2. Blokir Gestur Skala (iOS Safari & Chrome Touch)
+    document.addEventListener('gesturestart', function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener('gesturechange', function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener('gestureend', function (e) {
+      e.preventDefault();
+    });
 
+    // 3. Blokir Double-Tap Zoom (Ketukan dua kali beruntun)
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
       const now = Date.now();
@@ -325,11 +162,21 @@
       lastTouchEnd = now;
     }, { passive: false });
 
+    // 4. Blokir Ctrl + Scroll Wheel (Zoom via mouse/trackpad)
     document.addEventListener('wheel', function (e) {
       if (e.ctrlKey) {
         e.preventDefault();
       }
     }, { passive: false });
+
+    // Registrasi Service Worker PWA (jika file sw.js tersedia)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker Velocity Kasir Aktif:', reg.scope))
+          .catch(err => console.warn('SW Registrasi (opsional):', err));
+      });
+    }
   </script>
 </body>
 </html>
