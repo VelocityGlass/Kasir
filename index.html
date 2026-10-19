@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kasir Cafe</title>
   
-  <!-- Manifest & Theme Color #00454f -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00454f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <!-- Icon Launcher PWA dari Google Drive -->
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
 
@@ -26,7 +24,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
-    /* Iframe Menempel Penuh Layar */
     #gas-frame {
       width: 100%;
       height: 100%;
@@ -35,7 +32,6 @@
       background: #00454f;
     }
 
-    /* Floating Install Button */
     #install-btn {
       display: none;
       position: fixed;
@@ -60,7 +56,6 @@
       transform: translateY(-2px); 
     }
 
-    /* Layar Loading Tanpa Logo - Polos Spinner Bersih */
     #loader {
       position: fixed;
       inset: 0;
@@ -74,8 +69,8 @@
       transition: opacity 0.3s ease;
     }
     .spinner {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border: 4px solid rgba(255, 255, 255, 0.15);
       border-top-color: #4dd0e1;
       border-radius: 50%;
@@ -89,13 +84,12 @@
 </head>
 <body>
 
-  <!-- Layar Loading Langsung Spinner -->
+  <!-- Loading Screen #00454f -->
   <div id="loader">
     <div class="spinner"></div>
     <div style="font-size: 14px; font-weight: 500; letter-spacing: 0.5px;">Memuat Aplikasi...</div>
   </div>
 
-  <!-- Iframe Google Apps Script -->
   <iframe 
     id="gas-frame" 
     src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec" 
@@ -112,8 +106,8 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW Registered:', reg.scope))
-          .catch(err => console.log('SW Fail:', err));
+          .then(reg => console.log('SW Ready:', reg.scope))
+          .catch(err => console.error('SW Error:', err));
       });
     }
 
