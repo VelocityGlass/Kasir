@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Smart WebApp PWA</title>
-  <meta name="description" content="Progressive Web App Google Apps Script">
+  <title>Smart WebApp</title>
+  <meta name="description" content="Aplikasi Google Apps Script PWA">
   <meta name="theme-color" content="#2563eb">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,11 +15,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- Favicon dari Google Drive Direct Link ID: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno -->
+  <!-- Favicon & Icon dari Google Drive ID: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno -->
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
 
-  <!-- File Manifest Terpisah -->
+  <!-- Manifest JSON PWA -->
   <link rel="manifest" href="manifest.json">
 
   <style>
@@ -29,512 +29,117 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #f8fafc;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: #0f172a;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    .iframe-container {
+    .iframe-app {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      border: none;
+      border: 0;
       z-index: 10;
-    }
-    .safe-top {
-      padding-top: env(safe-area-inset-top);
     }
   </style>
 </head>
 <body class="flex flex-col h-screen w-screen overflow-hidden select-none bg-slate-900">
 
-  <div id="pwa-header" class="hidden z-50 bg-slate-900/90 backdrop-blur-md text-white border-b border-slate-700/60 px-4 py-2.5 flex items-center justify-between transition-all duration-300">
+  <!-- Banner Notifikasi Install PWA (Akan muncul otomatis saat siap diinstal) -->
+  <div id="pwa-install-bar" class="hidden z-50 bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-700/80 px-4 py-2.5 flex items-center justify-between transition-all duration-300">
     <div class="flex items-center gap-3">
-      <img src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" alt="Logo" class="w-8 h-8 rounded-lg shadow-md border border-slate-600 object-cover" onerror="this.src='https://placehold.co/192x192/2563eb/ffffff?text=App'">
+      <img src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" alt="Logo" class="w-8 h-8 rounded-lg shadow-md border border-slate-700 object-cover" onerror="this.src='https://placehold.co/192x192/2563eb/ffffff?text=App'">
       <div>
-        <h1 class="text-sm font-semibold text-slate-100 leading-tight">WebApp GAS</h1>
-        <p class="text-xs text-slate-400">Instal di perangkat untuk akses instan</p>
+        <h1 class="text-sm font-semibold text-slate-100 leading-tight">Smart WebApp</h1>
+        <p class="text-xs text-slate-400">Pasang aplikasi ini di perangkat Anda</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button id="btn-install" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-medium py-1.5 px-3.5 rounded-full shadow-lg transition">
+      <button id="btn-install" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-semibold py-1.5 px-3.5 rounded-full shadow-lg transition">
         <i class="bi bi-download"></i>
-        <span>Install App</span>
+        <span>Install</span>
       </button>
-      <button id="btn-dismiss" class="text-slate-400 hover:text-slate-200 p-1.5 rounded-full hover:bg-slate-800 transition">
+      <button id="btn-close-banner" class="text-slate-400 hover:text-slate-200 p-1 rounded-full hover:bg-slate-800 transition">
         <i class="bi bi-x text-lg"></i>
       </button>
     </div>
   </div>
 
+  <!-- Splash Screen Loading saat pertama dibuka -->
   <div id="splash-loader" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900 text-white transition-opacity duration-500">
     <div class="relative flex items-center justify-center mb-4">
       <div class="w-20 h-20 rounded-2xl p-1 bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-2xl flex items-center justify-center">
         <img src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" class="w-full h-full object-cover rounded-xl" alt="Icon" onerror="this.src='https://placehold.co/192x192/2563eb/ffffff?text=GAS'">
       </div>
-      <div class="absolute -bottom-2 -right-2 w-6 h-6 bg-emerald-500 border-2 border-slate-900 rounded-full flex items-center justify-center">
+      <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-2 border-slate-900 rounded-full flex items-center justify-center">
         <i class="bi bi-lightning-charge-fill text-[11px] text-white"></i>
       </div>
     </div>
-    <p class="text-base font-medium text-slate-200 tracking-wide">Memuat WebApp...</p>
-    <p class="text-xs text-slate-400 mt-1">Google Apps Script Runtime</p>
+    <p class="text-sm font-medium text-slate-200 tracking-wide">Membuka Aplikasi...</p>
     
-    <div class="w-48 h-1.5 bg-slate-800 rounded-full mt-6 overflow-hidden">
-      <div class="h-full bg-blue-500 rounded-full animate-pulse w-3/4"></div>
-    </div>
-
-    <!-- Mode Info / Tab Switcher for Developer Preview -->
-    <div class="mt-8 flex gap-2">
-      <button onclick="toggleDocGuide()" class="text-xs text-slate-400 hover:text-white underline decoration-slate-600">
-        <i class="bi bi-code-slash mr-1"></i>Lihat Script Code.gs & Setup GitHub
-      </button>
+    <div class="w-44 h-1.5 bg-slate-800 rounded-full mt-5 overflow-hidden">
+      <div class="h-full bg-blue-500 rounded-full animate-pulse w-2/3"></div>
     </div>
   </div>
 
+  <!-- Target WebApp Google Apps Script Anda -->
   <iframe 
-    id="gas-frame" 
-    class="iframe-container"
+    id="gas-app-frame" 
+    class="iframe-app"
     src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec"
     allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb; clipboard-read; clipboard-write;"
     sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-downloads"
-    onload="hideLoader()">
+    onload="hideSplashScreen()">
   </iframe>
 
-  <div id="guide-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-700 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-200">
-      
-      <!-- Modal Header -->
-      <div class="px-6 py-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i class="bi bi-filetype-json text-blue-400 text-2xl"></i>
-          <div>
-            <h2 class="text-lg font-bold text-white">Panduan Lengkap PWA di GitHub & File Google Apps Script</h2>
-            <p class="text-xs text-slate-400">Arsitektur Final: Backend (Code.gs), Frontend (Index.html), & Konfigurasi PWA</p>
-          </div>
-        </div>
-        <button onclick="toggleDocGuide()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition">
-          <i class="bi bi-x-lg text-lg"></i>
-        </button>
-      </div>
-
-      <!-- Modal Body (Documentation & Complete Files) -->
-      <div class="p-6 space-y-6 overflow-y-auto text-sm leading-relaxed">
-
-        <!-- STEP PWA GITHUB -->
-        <div class="bg-blue-950/40 border border-blue-800/50 p-4 rounded-xl">
-          <h3 class="text-blue-300 font-semibold text-base flex items-center gap-2 mb-2">
-            <i class="bi bi-github"></i> Cara Deploy ke GitHub Pages (Agar Muncul Pop-up Install di Chrome)
-          </h3>
-          <ol class="list-decimal list-inside space-y-2 text-slate-300 text-xs sm:text-sm">
-            <li>Buat repository baru di GitHub (misal: <code class="bg-slate-800 px-2 py-0.5 rounded text-blue-300">gas-pwa-app</code>) dengan visibilitas <strong>Public</strong>.</li>
-            <li>Buat file bernama <code class="bg-slate-800 px-2 py-0.5 rounded text-emerald-300">index.html</code> dan salin <strong>seluruh isi file ini</strong> ke dalamnya.</li>
-            <li>Buat file kedua bernama <code class="bg-slate-800 px-2 py-0.5 rounded text-emerald-300">sw.js</code> (Service Worker) dengan kode yang tertera di bawah.</li>
-            <li>Masuk ke menu repository: <strong>Settings &gt; Pages</strong>.</li>
-            <li>Pada bagian <strong>Branch</strong>, pilih <code class="bg-slate-800 px-2 py-0.5 rounded text-blue-300">main</code> (atau <code class="bg-slate-800 px-2 py-0.5 rounded">root</code>), lalu klik <strong>Save</strong>.</li>
-            <li>Dalam 1-2 menit, link GitHub Pages Anda akan aktif (contoh: <code class="text-amber-300">https://username.github.io/gas-pwa-app/</code>). Buka di Chrome di Laptop/HP &mdash; tombol <strong>Install PWA</strong> akan otomatis muncul di browser bar!</li>
-          </ol>
-        </div>
-
-        <!-- SERVICE WORKER CODE -->
-        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-          <div class="flex items-center justify-between mb-2">
-            <span class="font-mono text-xs text-amber-400 font-semibold">File 2 di GitHub: sw.js</span>
-            <button onclick="copyToClipboard('sw-code')" class="text-xs bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded text-slate-300 border border-slate-700 flex items-center gap-1">
-              <i class="bi bi-clipboard"></i> Salin
-            </button>
-          </div>
-          <pre id="sw-code" class="text-xs font-mono text-slate-300 bg-slate-900 p-3 rounded-lg overflow-x-auto select-all">const CACHE_NAME = 'gas-pwa-cache-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-  'https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'
-];
-
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
-      );
-    })
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (e) => {
-  // Hanya intercept file lokal/static assets, iframe GAS tetap online
-  if (e.request.url.includes('script.google.com')) {
-    return;
-  }
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
-  );
-});</pre>
-        </div>
-
-        <!-- SECTION GAS BACKEND & FRONTEND SOURCE -->
-        <div class="space-y-4">
-          <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2 flex items-center gap-2">
-            <i class="bi bi-file-earmark-code text-indigo-400"></i>
-            Source Code Asli Google Apps Script (Sesuai Standar GAS WebApp Builder)
-          </h3>
-
-          <!-- CODE.GS -->
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-mono text-xs text-blue-400 font-semibold">=== BACKEND (Code.gs) ===</span>
-              <button onclick="copyToClipboard('gs-code')" class="text-xs bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded text-slate-300 border border-slate-700 flex items-center gap-1">
-                <i class="bi bi-clipboard"></i> Salin
-              </button>
-            </div>
-            <pre id="gs-code" class="text-xs font-mono text-slate-300 bg-slate-900 p-3 rounded-lg overflow-x-auto max-h-60 overflow-y-auto select-all">/**
- * GAS WebApp Backend Core
- */
-function doGet() {
-  return HtmlService.createTemplateFromFile('Index')
-    .evaluate()
-    .setTitle('Smart WebApp')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
-}
-
-function setupDatabase() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Sheet Users
-  var userSheet = ss.getSheetByName('Users') || ss.insertSheet('Users');
-  if (userSheet.getLastRow() === 0) {
-    userSheet.appendRow(['ID', 'Name', 'Email', 'Date']);
-    userSheet.appendRow(['USR-101', 'Ahmad Rizky', 'ahmad@mail.com', new Date().toISOString().split('T')[0]]);
-    userSheet.appendRow(['USR-102', 'Siti Rahma', 'siti@mail.com', new Date().toISOString().split('T')[0]]);
-  }
-
-  // Sheet Transactions
-  var trxSheet = ss.getSheetByName('Transactions') || ss.insertSheet('Transactions');
-  if (trxSheet.getLastRow() === 0) {
-    trxSheet.appendRow(['ID', 'User', 'Amount', 'Date']);
-    trxSheet.appendRow(['TRX-501', 'Ahmad Rizky', 150000, new Date().toISOString().split('T')[0]]);
-    trxSheet.appendRow(['TRX-502', 'Siti Rahma', 250000, new Date().toISOString().split('T')[0]]);
-  }
-
-  return { status: 'success', message: 'Database setup berhasil!' };
-}
-
-function cleanData(sheetName) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(sheetName);
-  if (!sheet) return [];
-  
-  var values = sheet.getDataRange().getValues();
-  if (values.length &lt; 2) return [];
-  
-  var headers = values[0].map(function(h) { return h.toString().toLowerCase().trim(); });
-  var result = [];
-  
-  for (var i = 1; i &lt; values.length; i++) {
-    var row = values[i];
-    var obj = {};
-    for (var j = 0; j &lt; headers.length; j++) {
-      var val = row[j];
-      if (val instanceof Date) {
-        val = Utilities.formatDate(val, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-      }
-      obj[headers[j]] = val !== null ? val : '';
-    }
-    result.push(obj);
-  }
-  return result;
-}
-
-function getAllData() {
-  return {
-    users: cleanData('Users'),
-    transactions: cleanData('Transactions'),
-    config: { appName: 'Smart WebApp V4', version: '1.0.0' }
-  };
-}
-
-function saveUser(data) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('Users') || ss.insertSheet('Users');
-  var newId = 'USR-' + Math.floor(1000 + Math.random() * 9000);
-  var dateStr = data.date || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  
-  sheet.appendRow([newId, data.name, data.email, dateStr]);
-  return { status: 'success', id: newId };
-}
-
-function deleteUser(userId) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('Users');
-  if (!sheet) return { status: 'error', message: 'Sheet not found' };
-  
-  var values = sheet.getDataRange().getValues();
-  for (var i = 1; i &lt; values.length; i++) {
-    if (String(values[i][0]) === String(userId)) {
-      sheet.deleteRow(i + 1);
-      return { status: 'success' };
-    }
-  }
-  return { status: 'not_found' };
-}</pre>
-          </div>
-
-          <!-- INDEX.HTML FOR GAS -->
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-mono text-xs text-emerald-400 font-semibold">=== FRONTEND (Index.html di Apps Script) ===</span>
-              <button onclick="copyToClipboard('front-code')" class="text-xs bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded text-slate-300 border border-slate-700 flex items-center gap-1">
-                <i class="bi bi-clipboard"></i> Salin
-              </button>
-            </div>
-            <pre id="front-code" class="text-xs font-mono text-slate-300 bg-slate-900 p-3 rounded-lg overflow-x-auto max-h-60 overflow-y-auto select-all">&lt;!DOCTYPE html&gt;
-&lt;html lang="id"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;Smart WebApp GAS&lt;/title&gt;
-  &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
-  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"&gt;
-  &lt;script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body class="bg-light"&gt;
-  &lt;nav class="navbar navbar-dark bg-primary shadow-sm"&gt;
-    &lt;div class="container-fluid"&gt;
-      &lt;span class="navbar-brand mb-0 h1"&gt;&lt;i class="bi bi-grid-fill me-2"&gt;&lt;/i&gt;Smart Dashboard&lt;/span&gt;
-      &lt;button class="btn btn-sm btn-outline-light" onclick="loadData()"&gt;&lt;i class="bi bi-arrow-clockwise"&gt;&lt;/i&gt; Refresh&lt;/button&gt;
-    &lt;/div&gt;
-  &lt;/nav&gt;
-
-  &lt;div class="container my-4"&gt;
-    &lt;div class="d-flex justify-content-between align-items-center mb-3"&gt;
-      &lt;h5&gt;Daftar Pengguna&lt;/h5&gt;
-      &lt;button class="btn btn-primary" onclick="openAddModal()"&gt;&lt;i class="bi bi-plus-circle"&gt;&lt;/i&gt; Tambah User&lt;/button&gt;
-    &lt;/div&gt;
-    &lt;div class="card shadow-sm border-0"&gt;
-      &lt;div class="table-responsive"&gt;
-        &lt;table class="table table-hover mb-0" id="user-table"&gt;
-          &lt;thead class="table-light"&gt;
-            &lt;tr&gt;
-              &lt;th&gt;ID&lt;/th&gt;
-              &lt;th&gt;Nama&lt;/th&gt;
-              &lt;th&gt;Email&lt;/th&gt;
-              &lt;th&gt;Tanggal&lt;/th&gt;
-              &lt;th&gt;Aksi&lt;/th&gt;
-            &lt;/tr&gt;
-          &lt;/thead&gt;
-          &lt;tbody id="user-rows"&gt;
-            &lt;tr&gt;&lt;td colspan="5" class="text-center py-4"&gt;Memuat data...&lt;/td&gt;&lt;/tr&gt;
-          &lt;/tbody&gt;
-        &lt;/table&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;script&gt;
-    let db = {
-      users: [
-        { id: "USR-1", name: "Ahmad Rizky", email: "ahmad@mail.com", date: "2026-01-01" },
-        { id: "USR-2", name: "Budi Santoso", email: "budi@mail.com", date: "2026-01-02" },
-        { id: "USR-3", name: "Siti Rahma", email: "siti@mail.com", date: "2026-01-03" }
-      ],
-      transactions: [],
-      config: {}
-    };
-
-    function startLoading() {
-      Swal.fire({ title: 'Memuat...', allowOutsideClick: false, didOpen: () =&gt; Swal.showLoading() });
-    }
-    function endLoading() { Swal.close(); }
-
-    function loadData() {
-      startLoading();
-      if (typeof google === 'undefined') {
-        setTimeout(() =&gt; {
-          renderUI();
-          endLoading();
-        }, 500);
-      } else {
-        google.script.run
-          .withSuccessHandler(res =&gt; {
-            db = res;
-            renderUI();
-            endLoading();
-          })
-          .withFailureHandler(err =&gt; {
-            console.error(err);
-            endLoading();
-          })
-          .getAllData();
-      }
-    }
-
-    function renderUI() {
-      const tbody = document.getElementById('user-rows');
-      if (!db.users || db.users.length === 0) {
-        tbody.innerHTML = '&lt;tr&gt;&lt;td colspan="5" class="text-center"&gt;Tidak ada data.&lt;/td&gt;&lt;/tr&gt;';
-        return;
-      }
-      tbody.innerHTML = db.users.map(u =&gt; `
-        &lt;tr&gt;
-          &lt;td&gt;&lt;span class="badge bg-secondary"&gt;${u.id}&lt;/span&gt;&lt;/td&gt;
-          &lt;td class="fw-bold"&gt;${u.name}&lt;/td&gt;
-          &lt;td&gt;${u.email}&lt;/td&gt;
-          &lt;td&gt;${u.date}&lt;/td&gt;
-          &lt;td&gt;
-            &lt;button class="btn btn-sm btn-danger" onclick="deleteUserRow('${u.id}')"&gt;
-              &lt;i class="bi bi-trash"&gt;&lt;/i&gt;
-            &lt;/button&gt;
-          &lt;/td&gt;
-        &lt;/tr&gt;
-      `).join('');
-    }
-
-    function openAddModal() {
-      Swal.fire({
-        title: 'Tambah Pengguna Baru',
-        html: `
-          &lt;input id="swal-name" class="swal2-input" placeholder="Nama Lengkap"&gt;
-          &lt;input id="swal-email" class="swal2-input" placeholder="Email" type="email"&gt;
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Simpan',
-        preConfirm: () =&gt; {
-          const name = document.getElementById('swal-name').value;
-          const email = document.getElementById('swal-email').value;
-          if (!name || !email) {
-            Swal.showValidationMessage('Nama dan Email wajib diisi!');
-            return false;
-          }
-          return { name, email, date: new Date().toISOString().split('T')[0] };
-        }
-      }).then(res =&gt; {
-        if (res.isConfirmed) {
-          saveUserData(res.value);
-        }
-      });
-    }
-
-    function saveUserData(newUser) {
-      startLoading();
-      if (typeof google === 'undefined') {
-        newUser.id = 'USR-' + Math.floor(Math.random() * 9000 + 1000);
-        db.users.push(newUser);
-        renderUI();
-        endLoading();
-        Swal.fire('Sukses', 'Data berhasil ditambahkan (Simulasi)', 'success');
-      } else {
-        google.script.run
-          .withSuccessHandler(() =&gt; {
-            loadData();
-            Swal.fire('Sukses', 'Data tersimpan ke Spreadsheet', 'success');
-          })
-          .saveUser(newUser);
-      }
-    }
-
-    function deleteUserRow(id) {
-      if (confirm('Hapus user ' + id + '?')) {
-        startLoading();
-        if (typeof google === 'undefined') {
-          db.users = db.users.filter(u =&gt; u.id !== id);
-          renderUI();
-          endLoading();
-        } else {
-          google.script.run
-            .withSuccessHandler(() =&gt; loadData())
-            .deleteUser(id);
-        }
-      }
-    }
-
-    window.onload = loadData;
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</pre>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="px-6 py-3 bg-slate-800 border-t border-slate-700 flex justify-end">
-        <button onclick="toggleDocGuide()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-          Tutup &amp; Kembali ke WebApp
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // 1. Registrasi Service Worker eksternal (sw.js) yang aman dari error protokol blob:
+    // 1. Registrasi Service Worker PWA (Aman untuk HTTP/HTTPS & Preview Canvas)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        // Service worker hanya didukung pada protokol http: atau https:
         const isSupportedProtocol = window.location.protocol === 'https:' || window.location.protocol === 'http:';
-        
         if (isSupportedProtocol) {
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => {
-              console.log('Service Worker berhasil terdaftar dengan scope:', reg.scope);
-            })
-            .catch(err => {
-              console.warn('Pendaftaran Service Worker gagal:', err);
-            });
-        } else {
-          // Preview environment (seperti blob: atau file:)
-          console.info('Service Worker dilewati karena lingkungan saat ini berjalan pada skema:', window.location.protocol);
+            .then(reg => console.log('PWA Service Worker aktif:', reg.scope))
+            .catch(err => console.warn('PWA Service Worker dilewati:', err));
         }
       });
     }
 
-    // 2. Install Prompt PWA handler untuk Google Chrome
+    // 2. Tombol & Event Instalasi Chrome PWA
     let deferredPrompt = null;
-    const headerBar = document.getElementById('pwa-header');
+    const installBar = document.getElementById('pwa-install-bar');
     const installBtn = document.getElementById('btn-install');
-    const dismissBtn = document.getElementById('btn-dismiss');
+    const closeBtn = document.getElementById('btn-close-banner');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      headerBar.classList.remove('hidden');
+      installBar.classList.remove('hidden');
     });
 
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) {
-        // Panduan manual jika sudah di-install atau dibuka via desktop shortcut
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-4 py-2.5 rounded-xl shadow-2xl z-50';
-        toast.innerHTML = '<i class="bi bi-info-circle me-1"></i> Klik menu Chrome (titik tiga ⋮) &rarr; "Simpan dan bagikan" &rarr; "Instal aplikasi"';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
+        // Panduan jika browser belum memicu event otomatis
+        const hint = document.createElement('div');
+        hint.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-4 py-2.5 rounded-xl shadow-2xl z-50';
+        hint.innerHTML = '<i class="bi bi-info-circle me-1"></i> Klik menu titik tiga (⋮) di Chrome &rarr; pilih <b>"Instal aplikasi"</b>';
+        document.body.appendChild(hint);
+        setTimeout(() => hint.remove(), 4000);
         return;
       }
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User prompt response: ${outcome}`);
+      console.log('Hasil respon user:', outcome);
       deferredPrompt = null;
-      headerBar.classList.add('hidden');
+      installBar.classList.add('hidden');
     });
 
-    dismissBtn.addEventListener('click', () => {
-      headerBar.classList.add('hidden');
+    closeBtn.addEventListener('click', () => {
+      installBar.classList.add('hidden');
     });
 
-    // 3. Hilangkan splash loader setelah iframe selesai dimuat
-    function hideLoader() {
+    // 3. Menghilangkan Splash Loader saat WebApp GAS selesai dimuat
+    function hideSplashScreen() {
       const loader = document.getElementById('splash-loader');
       if (loader) {
         loader.style.opacity = '0';
@@ -544,30 +149,8 @@ function deleteUser(userId) {
       }
     }
 
-    // Fallback durasi maksimal jika jaringan lambat
-    setTimeout(hideLoader, 4000);
-
-    // 4. Modal Toggle & Clipboard Helpers
-    function toggleDocGuide() {
-      const modal = document.getElementById('guide-modal');
-      modal.classList.toggle('hidden');
-    }
-
-    function copyToClipboard(elementId) {
-      const text = document.getElementById(elementId).innerText;
-      const tempInput = document.createElement('textarea');
-      tempInput.value = text;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempInput);
-      
-      const notif = document.createElement('div');
-      notif.className = 'fixed bottom-5 right-5 bg-emerald-600 text-white text-xs px-4 py-2 rounded-lg shadow-xl z-50 animate-bounce';
-      notif.innerText = 'Tersalin ke clipboard!';
-      document.body.appendChild(notif);
-      setTimeout(() => notif.remove(), 2000);
-    }
+    // Fallback otomatis jika koneksi lambat
+    setTimeout(hideSplashScreen, 3500);
   </script>
 </body>
 </html>
