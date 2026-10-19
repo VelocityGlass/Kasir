@@ -29,19 +29,29 @@
     }
 
     html, body {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       overflow: hidden;
       background-color: #00454f;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      position: fixed;
+      inset: 0;
     }
 
     #appFrame {
       width: 100%;
       height: 100%;
+      height: 100dvh;
       border: none;
       display: block;
-      background-color: #f8fafc;
+      background-color: #00454f;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: auto !important;
+      touch-action: manipulation;
     }
 
     /* Floating PWA Install Bar */
@@ -94,12 +104,11 @@
 </head>
 <body>
 
-  <!-- Target URL WebApp GAS Anda yang sudah diperbarui -->
   <iframe 
     id="appFrame" 
-    src="https://script.google.com/macros/s/AKfycbxNaDynLvhIEX7FfSR_5GVWhUmiwyWuk3-vB3Z8eGzUzpfVdla6yIRv8gyig88xo9jf/exec"
+    src="https://script.google.com/macros/s/AKfycbxufv8OlwdRpIA9kGwJKR0o0DvzfOMOPJGj6zzfh5pDYQrojP3_y0qvu1NvhLPDK0QQ/exec"
     allow="camera; microphone; payment; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen"
-    sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+    sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation allow-pointer-lock"
   ></iframe>
 
   <!-- Prompt Install Melayang -->
@@ -110,16 +119,16 @@
   </div>
 
   <script>
-    // 1. Buat Web App Manifest secara dinamis via Blob URL
+    // Inisialisasi Manifest PWA (Bebas orientasi portrait & landscape)
     (function initManifest() {
       const manifest = {
         name: "Smart POS Kasir & Resto",
         short_name: "Smart POS",
         description: "Aplikasi Kasir Point of Sales Restoran & Kitchen",
-        start_url: window.location.href,
-        scope: window.location.href,
+        start_url: "./index.html",
+        scope: "./",
         display: "standalone",
-        orientation: "landscape",
+        orientation: "any",
         background_color: "#00454f",
         theme_color: "#00454f",
         icons: [
@@ -143,7 +152,7 @@
       document.getElementById("pwaManifest").setAttribute("href", manifestUrl);
     })();
 
-    // 2. Daftarkan Service Worker via Blob (Memenuhi syarat PWA Chrome)
+    // Service worker inline untuk standalone PWA cache
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         const swScript = `
@@ -157,29 +166,24 @@
         const swUrl = URL.createObjectURL(blob);
 
         navigator.serviceWorker.register(swUrl)
-          .then((reg) => console.log("PWA Service Worker Aktif:", reg.scope))
-          .catch((err) => console.warn("PWA Service Worker Warning:", err));
+          .then((reg) => console.log("PWA SW Aktif"))
+          .catch((err) => console.warn("PWA SW Info:", err));
       });
     }
 
-    // 3. Tangkap Event Chrome "beforeinstallprompt"
+    // Tangkap install prompt event dari browser
     let deferredPrompt = null;
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
       const banner = document.getElementById("installBanner");
-      if (banner) {
-        banner.style.display = "flex";
-      }
+      if (banner) banner.style.display = "flex";
     });
 
     function executeInstallPrompt() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === "accepted") {
-            console.log("Pengguna menyetujui instalasi PWA");
-          }
           deferredPrompt = null;
           dismissInstallBanner();
         });
@@ -192,7 +196,6 @@
     }
 
     window.addEventListener("appinstalled", () => {
-      console.log("Smart POS berhasil terpasang di perangkat");
       dismissInstallBanner();
     });
   </script>
