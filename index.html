@@ -36,56 +36,32 @@
       background-color: #00454f;
     }
     
-    /* Loading overlay awal dibuat seamless & logo dibuat sangat kecil tak mencolok */
+    /* Overlay penutup layar penuh murni berwarna #00454f tanpa icon */
     #preloader {
       position: fixed;
       inset: 0;
-      background: #00454f;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9998;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    /* Logo dibuat sangat mini (nyaris tak terlihat) */
-    .mini-stealth-icon {
-      width: 14px;
-      height: 14px;
-      opacity: 0.15;
-      border-radius: 3px;
-      object-fit: cover;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.1; transform: scale(0.95); }
-      50% { opacity: 0.3; transform: scale(1.05); }
+      background-color: #00454f;
+      z-index: 99999;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      pointer-events: all;
     }
 
     .hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
   </style>
 </head>
 <body>
 
-  <div id="preloader">
-    <img 
-      src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
-      alt="" 
-      class="mini-stealth-icon"
-      onerror="this.style.display='none'">
-  </div>
+  <!-- Layar penutup mulus tanpa icon mengganggu -->
+  <div id="preloader"></div>
 
   <!-- 
-    Iframe dengan atribut izin lengkap untuk:
-    - camera & microphone (kamera scanner barcode/webcam)
-    - geolocation & fullscreen
-    - clipboard & display capture
+    Iframe dengan izin lengkap: camera, microphone, geolocation, fullscreen, dll
   -->
   <iframe 
     id="app-frame" 
@@ -95,20 +71,31 @@
   </iframe>
 
   <script>
-    // 1. Hilangkan Preloader saat iframe selesai dimuat
-    const frame = document.getElementById('app-frame');
     const preloader = document.getElementById('preloader');
 
-    frame.onload = () => {
-      preloader.classList.add('hidden');
-    };
+    function revealApp() {
+      if (!preloader.classList.contains('hidden')) {
+        preloader.classList.add('hidden');
+      }
+    }
 
-    // Timeout pengaman jika koneksi lambat
-    setTimeout(() => {
-      preloader.classList.add('hidden');
-    }, 4500);
+    // Menunggu iframe GAS selesai loading internal agar transisi mulus
+    const frame = document.getElementById('app-frame');
+    frame.addEventListener('load', () => {
+      setTimeout(revealApp, 2000);
+    });
 
-    // 2. Registrasi Service Worker PWA agar fitur install Desktop Chrome aktif
+    // Fallback pengaman koneksi
+    setTimeout(revealApp, 4000);
+
+    // Menerima sinyal bila internal GAS mengirim status ready
+    window.addEventListener('message', (event) => {
+      if (event.data === 'app-ready' || (event.data && event.data.type === 'READY')) {
+        revealApp();
+      }
+    });
+
+    // Registrasi Service Worker PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -116,12 +103,6 @@
           .catch(err => console.log('Gagal daftar SW:', err));
       });
     }
-
-    // 3. Listener instalasi Chrome
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Izinkan browser menampilkan prompt install standar
-      console.log('Aplikasi siap di-install di Chrome!');
-    });
   </script>
 </body>
 </html>
