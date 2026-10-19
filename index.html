@@ -22,6 +22,9 @@
       overflow: hidden;
       background: #00454f;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      /* Memastikan sentuhan tidak ditahan oleh browser */
+      touch-action: manipulation;
+      pointer-events: auto !important;
     }
     
     #gas-frame {
@@ -30,6 +33,7 @@
       border: none;
       display: block;
       background: #00454f;
+      pointer-events: auto !important;
     }
 
     #install-btn {
@@ -51,11 +55,7 @@
       align-items: center;
       gap: 8px;
     }
-    #install-btn:hover { 
-      background: #007d8f; 
-      transform: translateY(-2px); 
-    }
-
+    
     #loader {
       position: fixed;
       inset: 0;
@@ -64,16 +64,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 999;
+      z-index: 999999; /* Pastikan selalu paling atas saat muncul */
       color: #b2ebf2;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-    
-    /* CLASS PENTING: Untuk memastikan layar loading hancur dan tidak memblokir sentuhan */
-    .loader-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none !important; 
+      transition: opacity 0.4s ease;
     }
 
     .spinner {
@@ -98,7 +91,6 @@
     <div style="font-size: 14px; font-weight: 500; letter-spacing: 0.5px;">Memuat Aplikasi...</div>
   </div>
 
-  <!-- Iframe DIBERSIHKAN dari onload (diatur lewat javascript di bawah) -->
   <iframe 
     id="gas-frame" 
     src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec" 
@@ -111,38 +103,34 @@
   </button>
 
   <script>
-    // --- 1. SCRIPT ANTI-NYANGKUT (MENGHILANGKAN LOADER) ---
-    const loader = document.getElementById('loader');
-    const iframe = document.getElementById('gas-frame');
-    
-    function hideLoader() {
-      // Tambahkan class agar loader menghilang dan tidak bisa disentuh
-      loader.classList.add('loader-hidden');
-      
-      // Hapus loader sepenuhnya dari HTML setelah 0.5 detik (menunggu transisi opacity selesai)
-      setTimeout(() => {
-        loader.style.display = 'none';
-      }, 500);
+    // --- 1. SCRIPT PENGHANCUR LOADER TOTAL ---
+    function destroyLoader() {
+      const loader = document.getElementById('loader');
+      if (loader) {
+        // Buat jadi transparan dulu agar mulus
+        loader.style.opacity = '0';
+        
+        // HANCURKAN elemen dari memori HTML secara permanen setelah 0.4 detik
+        setTimeout(() => {
+          loader.remove(); 
+        }, 400);
+      }
     }
 
-    // Cara 1: Deteksi normal jika iframe selesai load
-    iframe.addEventListener('load', hideLoader);
+    const iframe = document.getElementById('gas-frame');
+    iframe.addEventListener('load', destroyLoader);
 
-    // Cara 2 (Failsafe): Apapun yang terjadi (misal internet lemot/nyangkut), 
-    // paksa hilangkan loader setelah 3.5 detik (3500 ms) agar aplikasi BISA DI-KLIK!
-    setTimeout(hideLoader, 3500);
+    // Failsafe: Jika internet nyangkut, hancurkan paksa setelah 4 detik
+    setTimeout(destroyLoader, 4000);
 
 
     // --- 2. SCRIPT PWA & SERVICE WORKER ---
-    // Pastikan Service Worker HANYA didaftarkan jika dibuka di domain HTTPS atau HTTP (menghindari error blob di preview)
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('SW Ready:', reg.scope))
           .catch(err => console.error('SW Error:', err));
       });
-    } else {
-      console.log('Membuka di mode Preview/Canvas. Service Worker dilewati.');
     }
 
     let deferredPrompt;
