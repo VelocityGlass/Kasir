@@ -1,43 +1,31 @@
-const CACHE_NAME = 'kasir-pwa-v8';
-
-// HANYA file pembungkus ini yang disimpan di memori HP
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json'
+const CACHE_NAME = 'pwa-gas-wrapper-v1';
+const urlsToCache = [
+    './',
+    './index.html',
+    './manifest.json',
+    './icon.png'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
-  self.skipWaiting();
+self.addEventListener('install', event => {
+    // Perform install steps
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                console.log('Opened cache');
+                return cache.addAll(urlsToCache);
+            })
+    );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-  
-  // KUNCI ANTI-FREEZE: 
-  // Jika ini adalah request ke Google (iframe), BIARKAN LEPAS TOTAL!
-  // Jangan biarkan Service Worker menyentuh sistem Google sama sekali.
-  if (url.origin !== location.origin) {
-    return; 
-  }
-  
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
-    })
-  );
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                // Cache hit - return response
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            })
+    );
 });
