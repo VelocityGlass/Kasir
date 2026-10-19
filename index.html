@@ -2,107 +2,249 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Aplikasi Desktop WebApp</title>
-  
-  <!-- Manifest PWA untuk instalasi di Chrome -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00454f">
-  
-  <!-- Icon link (ID Google Drive Anda) -->
-  <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
+  <!-- Viewport diatur ke lebar desktop (1024px) agar tampilan di mobile tetap berskala desktop -->
+  <meta name="viewport" content="width=1024, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>WebApp Desktop Mode</title>
+
+  <!-- Status Bar Kontras: Terang (#f8f9fa teks gelap) & Gelap (#121212 teks putih) -->
+  <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+
+  <!-- Ikon Web & Favicon -->
+  <link rel="icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" type="image/png">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-  
+
+  <!-- Hubungkan file manifest.json eksternal -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Dukungan Standalone / Fullscreen untuk iOS & Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #212529;
+      --loader-accent: #0d6efd;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #121212;
+        --text-color: #e9ecef;
+        --loader-accent: #3b82f6;
+      }
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #00454f;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      user-select: none;
-    }
-    
-    #app-frame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-      background-color: #00454f;
-    }
-    
-    /* Overlay penutup layar penuh murni berwarna #00454f tanpa icon */
-    #preloader {
-      position: fixed;
-      inset: 0;
-      background-color: #00454f;
-      z-index: 99999;
-      opacity: 1;
-      visibility: visible;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-      pointer-events: all;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
 
-    .hidden {
-      opacity: 0 !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
+    /* Area Iframe Fullscreen */
+    #app-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      flex: 1;
+      background-color: transparent;
+    }
+
+    /* Layar Loading */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-top-color: var(--loader-accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .spinner {
+        border-color: rgba(255, 255, 255, 0.15);
+        border-top-color: var(--loader-accent);
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Pop-up Banner Ajakan Install PWA */
+    #install-banner {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      color: #212529;
+      padding: 12px 20px;
+      border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      z-index: 10000;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #install-banner {
+        background: #1e1e1e;
+        color: #f1f1f1;
+        border-color: #333333;
+      }
+    }
+
+    @keyframes slideUp {
+      from { transform: translate(-50%, 30px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    .btn-install {
+      background-color: #0d6efd;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-install:hover {
+      background-color: #0b5ed7;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: inherit;
+      opacity: 0.6;
+      padding: 0 4px;
     }
   </style>
 </head>
 <body>
+  <!-- Layar Pembuka / Loading -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <p style="margin-top: 16px; font-weight: 500; font-size: 15px;">Membuka Aplikasi...</p>
+  </div>
 
-  <!-- Layar penutup mulus tanpa icon mengganggu -->
-  <div id="preloader"></div>
+  <!-- Pop-up Tombol Pasang Aplikasi Chrome -->
+  <div id="install-banner">
+    <span>Pasang aplikasi ke layar utama?</span>
+    <button class="btn-install" id="btn-install-app">Install</button>
+    <button class="btn-close" id="btn-close-banner">✕</button>
+  </div>
 
-  <!-- 
-    Iframe dengan izin lengkap: camera, microphone, geolocation, fullscreen, dll
-  -->
-  <iframe 
-    id="app-frame" 
-    src="https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec"
-    allow="camera; microphone; geolocation; fullscreen; display-capture; clipboard-read; clipboard-write; web-share"
-    allowfullscreen>
-  </iframe>
+  <!-- Iframe Aplikasi Google Apps Script dengan izin penuh kamera, mikrofon, print, & fullscreen -->
+  <div id="app-container">
+    <iframe 
+      id="gas-frame"
+      src="https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec"
+      allow="camera *; microphone *; geolocation *; display-capture *; autoplay *; clipboard-write *; clipboard-read *; fullscreen *; printing *;"
+      allowfullscreen="true">
+    </iframe>
+  </div>
 
   <script>
-    const preloader = document.getElementById('preloader');
-
-    function revealApp() {
-      if (!preloader.classList.contains('hidden')) {
-        preloader.classList.add('hidden');
-      }
-    }
-
-    // Menunggu iframe GAS selesai loading internal agar transisi mulus
-    const frame = document.getElementById('app-frame');
-    frame.addEventListener('load', () => {
-      setTimeout(revealApp, 2000);
-    });
-
-    // Fallback pengaman koneksi
-    setTimeout(revealApp, 4000);
-
-    // Menerima sinyal bila internal GAS mengirim status ready
-    window.addEventListener('message', (event) => {
-      if (event.data === 'app-ready' || (event.data && event.data.type === 'READY')) {
-        revealApp();
-      }
-    });
-
-    // Registrasi Service Worker PWA
+    // 1. Registrasi Service Worker dari file terpisah sw.js
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('PWA ServiceWorker terdaftar:', reg.scope))
-          .catch(err => console.log('Gagal daftar SW:', err));
+          .then((registration) => {
+            console.log('ServiceWorker berhasil terdaftar:', registration.scope);
+          })
+          .catch((err) => {
+            console.warn('Registrasi ServiceWorker gagal:', err);
+          });
       });
     }
+
+    // 2. Hilangkan Indikator Loading setelah iframe selesai memuat
+    const iframe = document.getElementById('gas-frame');
+    const loadingScreen = document.getElementById('loading-screen');
+
+    iframe.onload = function() {
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 400);
+    };
+
+    // 3. Tangani Install Prompt (Banner PWA di Chrome)
+    let deferredPrompt;
+    const installBanner = document.getElementById('install-banner');
+    const btnInstall = document.getElementById('btn-install-app');
+    const btnClose = document.getElementById('btn-close-banner');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Cegah Chrome memunculkan prompt mini bawaan langsung
+      e.preventDefault();
+      deferredPrompt = e;
+      // Tampilkan banner custom kita
+      installBanner.style.display = 'flex';
+    });
+
+    btnInstall.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBanner.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    btnClose.addEventListener('click', () => {
+      installBanner.style.display = 'none';
+    });
   </script>
 </body>
 </html>
