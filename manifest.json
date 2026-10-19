@@ -1,13 +1,12 @@
 {
-"name": "Smart WebApp GAS",
-"short_name": "GAS WebApp",
-"description": "Progressive Web Application Google Apps Script",
+"name": "Sistem WebApp Desktop",
+"short_name": "WebApp",
+"description": "Aplikasi Desktop Google Apps Script Standalone",
 "start_url": "./index.html",
-"scope": "./",
 "display": "standalone",
-"orientation": "portrait-primary",
 "background_color": "#0f172a",
-"theme_color": "#2563eb",
+"theme_color": "#1e293b",
+"orientation": "any",
 "icons": [
 {
 "src": "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno",
