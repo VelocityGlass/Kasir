@@ -5,56 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Smart WebApp</title>
 
-  <!-- Meta untuk Fullscreen & Mobile Standalone -->
+  <!-- Meta PWA Standalone Fullscreen -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" id="ios-status-bar">
   <meta name="apple-mobile-web-app-title" content="SmartApp">
 
-  <!-- Adaptive Theme Color (Terang / Gelap agar status bar tidak tabrakan warna) -->
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
+  <!-- Meta Theme Color Responsif (Mencegah teks baterai/jam tabrakan warna) -->
+  <meta name="theme-color" id="theme-color-meta" content="#f8fafc">
 
   <!-- Favicon & Touch Icon -->
   <link rel="icon" type="image/png" id="dynamic-favicon" href="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd">
 
-  <!-- Tailwind CSS & Bootstrap Icons untuk UI interaktif jika diperlukan -->
+  <!-- Tailwind CSS & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
-    * {
+    *, *::before, *::after {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
     }
+    
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #f8fafc;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* Background default mengikuti preferensi sistem */
+      background-color: #f8fafc;
+      color: #0f172a;
     }
+
     @media (prefers-color-scheme: dark) {
       html, body {
-        background-color: #0f172a;
+        background-color: #0b1120;
         color: #f8fafc;
       }
     }
-    /* Frame utama Google Apps Script */
+
+    /* Frame Utama Google Apps Script: Responsif penuh dan lancar di-scroll */
     #gas-frame {
       width: 100vw;
       height: 100vh;
-      border: none;
+      border: 0;
       display: block;
-      transition: opacity 0.3s ease-in-out;
-    }
-    /* Loading overlay */
-    #app-loader {
       position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      background: transparent;
+      touch-action: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Loader dengan pointer-events: none saat fading agar klik tidak terhalang / tidak freeze */
+    #app-loader {
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -63,69 +73,76 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 50;
-      backdrop-filter: blur(8px);
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      z-index: 30;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
-    /* Install Banner Floating Bottom */
+
+    /* Kelas khusus untuk memastikan loader tidak menghalangi sentuhan layar sama sekali */
+    .loader-hidden {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* Animasi floating banner instal */
     #install-banner {
       display: none;
-      animation: slideUp 0.3s ease-out forwards;
+      animation: bannerSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    @keyframes slideUp {
-      from { transform: translateY(100%); opacity: 0; }
+
+    @keyframes bannerSlideUp {
+      from { transform: translateY(110%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col relative w-full h-full">
+<body class="w-full h-full relative select-none">
 
-  <!-- Screen Loading Animasi Halus -->
-  <div id="app-loader" class="bg-white/80 dark:bg-slate-900/80">
+  <!-- Screen Loading Elegan & Transparan Terhadap Sentuhan saat selesai -->
+  <div id="app-loader" class="bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md">
     <div class="relative flex items-center justify-center mb-4">
       <img 
         src="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd" 
         alt="Logo" 
-        class="w-16 h-16 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 object-cover"
-        onerror="this.src='https://placehold.co/100x100/3b82f6/ffffff?text=App';"
+        class="w-16 h-16 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 object-cover"
+        onerror="this.src='https://placehold.co/100x100/2563eb/ffffff?text=App';"
       >
-      <div class="absolute -inset-1 rounded-2xl border-2 border-blue-500 animate-ping opacity-25"></div>
+      <div class="absolute -inset-1.5 rounded-2xl border-2 border-blue-500 animate-pulse opacity-40"></div>
     </div>
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center space-x-2 my-2">
       <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
       <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
       <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
     </div>
-    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-3 tracking-wide">Memuat Aplikasi...</span>
+    <span class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mt-2">MEMUAT SISTEM...</span>
   </div>
 
-  <!-- Banner Tombol Install (Muncul otomatis jika belum terinstal) -->
-  <div id="install-banner" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-40 flex items-center justify-between gap-3">
+  <!-- Banner Pasang Aplikasi (Bisa ditutup dan tidak menutupi interaksi frame) -->
+  <div id="install-banner" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-40 flex items-center justify-between gap-3">
     <div class="flex items-center gap-3">
-      <img src="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd" class="w-10 h-10 rounded-xl shadow-sm object-cover" onerror="this.src='https://placehold.co/80x80/3b82f6/ffffff?text=App';">
+      <img src="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd" class="w-10 h-10 rounded-xl shadow-sm object-cover" onerror="this.src='https://placehold.co/80x80/2563eb/ffffff?text=App';">
       <div>
-        <h4 class="font-semibold text-sm leading-tight text-slate-900 dark:text-white">Install WebApp</h4>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Jalankan fullscreen tanpa browser bar</p>
+        <h4 class="font-bold text-xs text-slate-900 dark:text-white leading-tight">Install Fullscreen</h4>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">Jalankan bersih tanpa browser bar</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button id="btn-close-banner" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2 py-1.5 rounded-lg">Nanti</button>
-      <button id="btn-install" class="text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl shadow-sm transition active:scale-95 flex items-center gap-1.5">
+      <button id="btn-close-banner" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2 py-1.5 rounded-lg transition">Nanti</button>
+      <button id="btn-install" class="text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl shadow transition active:scale-95 flex items-center gap-1.5">
         <i class="bi bi-download"></i> Pasang
       </button>
     </div>
   </div>
 
-  <!-- WebApp Frame Google Apps Script -->
+  <!-- Iframe Google Apps Script dengan izin penuh (anti-freeze & support dialog/popup/kamera) -->
   <iframe 
     id="gas-frame" 
     src="https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec"
-    allow="geolocation; microphone; camera; midi; encrypted-media; clipboard-read; clipboard-write; fullscreen"
-    sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-downloads"
+    allow="geolocation; microphone; camera; midi; encrypted-media; clipboard-read; clipboard-write; fullscreen; display-capture"
+    sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-downloads allow-top-navigation-by-user-activation"
     loading="eager"
   ></iframe>
 
-  <!-- Script PWA & Manajemen Instalasi -->
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec";
     const ICON_DIRECT_URL = "https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd";
@@ -135,36 +152,57 @@
     const installBanner = document.getElementById('install-banner');
     const btnInstall = document.getElementById('btn-install');
     const btnCloseBanner = document.getElementById('btn-close-banner');
+    const themeColorMeta = document.getElementById('theme-color-meta');
+    const iosStatusBar = document.getElementById('ios-status-bar');
 
-    let deferredPrompt = null;
+    // 1. Logika Penyesuaian Tema Status Bar Dinamis
+    // Jika HP tema Terang -> Gunakan #f8fafc (Ikon jam/baterai Android & iOS otomatis jadi Hitam/Gelap)
+    // Jika HP tema Gelap  -> Gunakan #0b1120 (Ikon jam/baterai otomatis jadi Putih/Terang)
+    function applyAdaptiveTheme() {
+      const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDarkMode) {
+        themeColorMeta.setAttribute('content', '#0b1120');
+        if (iosStatusBar) iosStatusBar.setAttribute('content', 'black-translucent');
+      } else {
+        themeColorMeta.setAttribute('content', '#f8fafc');
+        if (iosStatusBar) iosStatusBar.setAttribute('content', 'default');
+      }
+    }
 
-    // Menghilangkan loading ketika frame selesai dimuat
-    frame.addEventListener('load', () => {
+    // Jalankan saat start & dengarkan perubahan tema live saat pengguna berganti mode di HP
+    applyAdaptiveTheme();
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyAdaptiveTheme);
+    }
+
+    // 2. Anti-Freeze Loader: Hilangkan total layer loader agar klik tidak terhalang
+    let isLoaderDismissed = false;
+    function dismissLoader() {
+      if (isLoaderDismissed) return;
+      isLoaderDismissed = true;
+      loader.classList.add('loader-hidden');
       setTimeout(() => {
-        loader.style.opacity = '0';
-        setTimeout(() => {
-          loader.style.visibility = 'hidden';
-        }, 400);
-      }, 500);
+        loader.style.display = 'none';
+      }, 400);
+    }
+
+    // Matikan loader saat iframe selesai load
+    frame.addEventListener('load', () => {
+      setTimeout(dismissLoader, 300);
     });
 
-    // Fallback jika iframe lambat merespons (maksimal 6 detik loading)
-    setTimeout(() => {
-      if (loader.style.visibility !== 'hidden') {
-        loader.style.opacity = '0';
-        setTimeout(() => { loader.style.visibility = 'hidden'; }, 400);
-      }
-    }, 6000);
+    // Fallback anti-freeze: Maksimal 3.5 detik loader WAJIB hilang agar user tidak terjebak
+    setTimeout(dismissLoader, 3500);
 
-    // Membuat file manifest.json secara dinamis di memori browser
+    // 3. PWA Manifest Generator Otomatis
     const manifestJson = {
       name: "Smart WebApp GAS",
       short_name: "SmartApp",
       description: "Aplikasi Fullscreen Google Apps Script",
       start_url: window.location.href,
       display: "standalone",
-      background_color: "#0f172a",
-      theme_color: "#f8fafc",
+      background_color: window.matchMedia('(prefers-color-scheme: dark)').matches ? "#0b1120" : "#f8fafc",
+      theme_color: window.matchMedia('(prefers-color-scheme: dark)').matches ? "#0b1120" : "#f8fafc",
       icons: [
         {
           src: ICON_DIRECT_URL,
@@ -188,7 +226,8 @@
     linkManifest.href = manifestUrl;
     document.head.appendChild(linkManifest);
 
-    // Deteksi apakah sedang dibuka dalam mode standalone (terinstal di HP)
+    // 4. Deteksi PWA & Handler Banner Pasang
+    let deferredPrompt = null;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -208,8 +247,12 @@
         }
         deferredPrompt = null;
       } else {
-        // Panduan jika browser iOS Safari atau Chrome versi lain
-        alert("Untuk memasang di Layar Utama:\n1. Buka menu titik tiga browser (atau tombol Share di iPhone)\n2. Pilih 'Tambahkan ke Layar Utama' / 'Install App'");
+        // Panduan jika browser belum memicu prompt otomatis
+        const infoMsg = document.createElement('div');
+        infoMsg.className = 'fixed top-4 left-4 right-4 max-w-sm mx-auto bg-blue-600 text-white text-xs p-3 rounded-xl shadow-lg z-50 text-center animate-bounce';
+        infoMsg.textContent = "Ketuk ikon Titik Tiga (⋮) di Chrome > Pilih 'Tambahkan ke Layar Utama' / 'Install App'";
+        document.body.appendChild(infoMsg);
+        setTimeout(() => infoMsg.remove(), 4500);
       }
     });
 
@@ -222,17 +265,12 @@
       deferredPrompt = null;
     });
 
+    // 5. Service Worker Passthrough
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'gas-pwa-cache-v1';
-        self.addEventListener('install', (e) => {
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(clients.claim());
-        });
+        self.addEventListener('install', (e) => self.skipWaiting());
+        self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
         self.addEventListener('fetch', (e) => {
-          // Pass-through fetch
           e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
         });
       `;
