@@ -6,15 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- URL Gambar Langsung dari ID Google Drive: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno -->
-  <!-- Konfigurasi Favicon dan Icon Instalasi Chrome / Android / iOS -->
-  <link rel="icon" type="image/png" sizes="192x192" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-  <link rel="icon" type="image/png" sizes="512x512" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
-  <link rel="shortcut icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" type="image/x-icon">
+  <!-- 
+    Ikon adaptif dengan inner padding & safe-area:
+    Dibuat dengan format SVG Data-URI agar memiliki margin/padding di sekeliling logo 
+    sehingga tidak terpotong saat dijadikan squircle/lingkaran oleh Android maupun iOS.
+  -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='46' y='46' width='420' height='420' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
+  
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='56' y='56' width='400' height='400' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
 
-  <!-- Manifest Web Terintegrasi dengan Logo Google Drive -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <!-- Manifest Web dengan padding aman dan background netral putih untuk logo maskable -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20fill%3D'%2523ffffff'%2F%253E%253Cimage%20href%3D'https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'%20x%3D'64'%20y%3D'64'%20width%3D'384'%20height%3D'384'%20preserveAspectRatio%3D'xMidYMid%20meet'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
 
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
@@ -55,11 +57,11 @@
       touch-action: pan-x pan-y;
     }
 
-    /* Loading Screen Animasi Halus */
+    /* Loading Screen Mewah & Rapi */
     #loader {
       position: fixed;
       inset: 0;
-      background: #0f172a;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -67,50 +69,86 @@
       color: #ffffff;
       z-index: 99999;
       transition: opacity 0.4s ease, visibility 0.4s ease;
+      padding: 24px;
+    }
+
+    /* Kartu Logo dengan Padding & Border Halus agar tidak terpotong */
+    .logo-container {
+      width: 130px;
+      height: 130px;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      margin-bottom: 28px;
+      animation: pulseIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .loader-logo {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Memastikan logo utuh tanpa terpotong */
+      display: block;
     }
 
     .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3.5px solid rgba(255, 255, 255, 0.15);
+      width: 38px;
+      height: 38px;
+      border: 3px solid rgba(255, 255, 255, 0.12);
       border-top-color: #38bdf8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
-    .loader-text {
-      font-size: 15px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      color: #cbd5e1;
+    .loader-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: #f8fafc;
+      margin-bottom: 4px;
+    }
+
+    .loader-subtitle {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+      color: #94a3b8;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    @keyframes pulseIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Layar Pembuka / Loading dengan Logo Bisnis -->
+  <!-- Layar Pembuka / Splash Screen yang Rapi & Proporsional -->
   <div id="loader">
-    <img 
-      src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
-      alt="Velocity Logo" 
-      class="loader-logo"
-      onerror="this.style.display='none'">
+    <div class="logo-container">
+      <img 
+        src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" 
+        alt="Velocity Glass Logo" 
+        class="loader-logo"
+        onerror="this.parentElement.style.display='none'">
+    </div>
     <div class="spinner"></div>
-    <div class="loader-text">Memuat Velocity Kasir...</div>
+    <div class="loader-title">Velocity Kasir</div>
+    <div class="loader-subtitle">Menyiapkan sistem transaksi...</div>
   </div>
 
   <!-- Iframe Aplikasi Google Apps Script -->
