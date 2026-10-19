@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kasir Cafe</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00454f">
-
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #00454f;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aplikasi Saya</title>
     
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-  </style>
+    <!-- Memanggil file manifest agar bisa diinstal -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="icon" href="icon.png" type="image/png">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Mencegah double scrollbar */
+            background-color: #ffffff;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
 </head>
 <body>
+    <!-- Link GAS Anda dimasukkan ke dalam iframe ini -->
+    <iframe src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec" allow="camera; microphone; geolocation"></iframe>
 
-  <iframe src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec"></iframe>
-
-  <script>
-    if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
-  </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker terdaftar sukses!', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker gagal:', err);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
