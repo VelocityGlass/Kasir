@@ -7,9 +7,9 @@
   
   <!-- Manifest PWA untuk instalasi di Chrome -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e293b">
+  <meta name="theme-color" content="#0f172a">
   
-  <!-- Icon link (menggunakan direct thumbnail view dari ID Google Drive Anda) -->
+  <!-- Icon link (ID Google Drive Anda) -->
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
   
@@ -34,46 +34,6 @@
       border: none;
       display: block;
       background-color: #ffffff;
-    }
-
-    /* Floating Quick Bar: Kontrol Print, Refresh, Fullscreen */
-    #quick-bar {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      display: flex;
-      gap: 8px;
-      z-index: 9999;
-      opacity: 0.25;
-      transition: opacity 0.3s ease;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(8px);
-      padding: 6px 10px;
-      border-radius: 999px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-    }
-    #quick-bar:hover {
-      opacity: 1;
-    }
-    .tool-btn {
-      background: #334155;
-      color: #f8fafc;
-      border: none;
-      outline: none;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .tool-btn:hover {
-      background: #2563eb;
-    }
-    .tool-btn:active {
-      transform: scale(0.95);
     }
     
     /* Loading overlay awal */
@@ -118,9 +78,9 @@
 
   <!-- 
     Iframe dengan atribut izin lengkap untuk:
-    - camera & microphone (akses scanner/kamera)
-    - display-capture & fullscreen
-    - clipboard & printing
+    - camera & microphone (kamera scanner barcode/webcam)
+    - geolocation & fullscreen
+    - clipboard & display capture
   -->
   <iframe 
     id="app-frame" 
@@ -128,13 +88,6 @@
     allow="camera; microphone; geolocation; fullscreen; display-capture; clipboard-read; clipboard-write; web-share"
     allowfullscreen>
   </iframe>
-
-  <!-- Quick Floating Tools untuk kemudahan operasional di desktop -->
-  <div id="quick-bar">
-    <button class="tool-btn" onclick="triggerPrint()" title="Cetak / Print Halaman">🖨️ Cetak</button>
-    <button class="tool-btn" onclick="toggleFullscreen()" title="Layar Penuh">⛶ Fullscreen</button>
-    <button class="tool-btn" onclick="reloadFrame()" title="Segarkan WebApp">🔄 Muat Ulang</button>
-  </div>
 
   <script>
     // 1. Hilangkan Preloader saat iframe selesai dimuat
@@ -145,40 +98,12 @@
       preloader.classList.add('hidden');
     };
 
-    // Timeout pengaman jika load lambat
+    // Timeout pengaman jika koneksi lambat
     setTimeout(() => {
       preloader.classList.add('hidden');
     }, 4500);
 
-    // 2. Fungsi Cetak / Print langsung ke iframe
-    function triggerPrint() {
-      try {
-        frame.contentWindow.focus();
-        frame.contentWindow.print();
-      } catch (err) {
-        // Jika cross-origin print terhalang, panggil window print induk
-        window.print();
-      }
-    }
-
-    // 3. Fungsi Toggle Layar Penuh (True Fullscreen)
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(e => console.log(e));
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    }
-
-    // 4. Reload Iframe
-    function reloadFrame() {
-      preloader.classList.remove('hidden');
-      frame.src = frame.src;
-    }
-
-    // 5. Registrasi Service Worker PWA agar tombol install Chrome muncul
+    // 2. Registrasi Service Worker PWA agar fitur install Desktop Chrome aktif
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -187,11 +112,9 @@
       });
     }
 
-    // 6. Dengarkan event tombol instalasi Chrome (opsional auto prompt)
-    let deferredPrompt;
+    // 3. Listener instalasi Chrome
     window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+      // Izinkan browser menampilkan prompt install standar
       console.log('Aplikasi siap di-install di Chrome!');
     });
   </script>
