@@ -1,31 +1,22 @@
-const CACHE_NAME = 'pwa-gas-wrapper-v1';
-const urlsToCache = [
-    './',
-    './index.html',
-    './manifest.json',
-    './icon.png'
-];
+const CACHE_NAME = 'pwa-cache-v1';
 
-self.addEventListener('install', event => {
-    // Perform install steps
+self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
-            })
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll([
+                './',
+                './index.html',
+                './manifest.json',
+                './icon.png'
+            ]);
+        })
     );
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
-            })
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
     );
 });
