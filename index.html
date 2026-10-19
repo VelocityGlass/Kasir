@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
   <title>Kasir Cafe</title>
   
   <link rel="manifest" href="manifest.json">
@@ -15,145 +15,89 @@
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
+      margin: 0;
+      padding: 0;
       width: 100%;
       height: 100%;
+      height: 100dvh; /* Dynamic viewport height untuk menangani keyboard HP */
       overflow: hidden;
       background: #00454f;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      /* Memastikan sentuhan tidak ditahan oleh browser */
-      touch-action: manipulation;
-      pointer-events: auto !important;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
     }
     
+    /* Iframe Kasir dibuat mandiri dan fleksibel */
     #gas-frame {
       width: 100%;
       height: 100%;
-      border: none;
+      border: 0;
+      outline: none;
       display: block;
       background: #00454f;
-      pointer-events: auto !important;
+      -webkit-overflow-scrolling: touch;
     }
 
-    #install-btn {
-      display: none;
+    /* Indikator loading minimal di paling atas agar tidak menutupi area klik */
+    #top-bar-loader {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      background: #006877;
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 12px 22px;
-      border-radius: 9999px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-      transition: all 0.2s ease;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    #loader {
-      position: fixed;
-      inset: 0;
-      background: #00454f;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 999999; /* Pastikan selalu paling atas saat muncul */
-      color: #b2ebf2;
-      transition: opacity 0.4s ease;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #4dd0e1, #00acc1, #4dd0e1);
+      background-size: 200% 100%;
+      animation: barMove 1.2s linear infinite;
+      z-index: 10000;
+      pointer-events: none !important; /* Wajib agar sentuhan tembus langsung ke kasir */
+      transition: opacity 0.3s ease;
     }
 
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 4px solid rgba(255, 255, 255, 0.15);
-      border-top-color: #4dd0e1;
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-      margin-bottom: 14px;
-    }
-    @keyframes spin { 
-      to { transform: rotate(360deg); } 
+    @keyframes barMove {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading Screen #00454f -->
-  <div id="loader">
-    <div class="spinner"></div>
-    <div style="font-size: 14px; font-weight: 500; letter-spacing: 0.5px;">Memuat Aplikasi...</div>
-  </div>
+  <!-- Progress bar tipis di tepi atas layar (0% mengganggu sentuhan) -->
+  <div id="top-bar-loader"></div>
 
+  <!-- Iframe dengan atribut sandbox lengkap untuk form kasir & anti-freeze -->
   <iframe 
     id="gas-frame" 
     src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec" 
-    allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; autoplay">
+    allow="geolocation; microphone; camera; payment; autoplay"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation">
   </iframe>
 
-  <button id="install-btn">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-    Install Aplikasi
-  </button>
-
   <script>
-    // --- 1. SCRIPT PENGHANCUR LOADER TOTAL ---
-    function destroyLoader() {
-      const loader = document.getElementById('loader');
+    // 1. Hilangkan progress bar saat iframe sudah selesai dimuat
+    const iframe = document.getElementById('gas-frame');
+    const loader = document.getElementById('top-bar-loader');
+
+    function removeLoader() {
       if (loader) {
-        // Buat jadi transparan dulu agar mulus
         loader.style.opacity = '0';
-        
-        // HANCURKAN elemen dari memori HTML secara permanen setelah 0.4 detik
         setTimeout(() => {
-          loader.remove(); 
-        }, 400);
+          if (loader) loader.remove();
+        }, 300);
       }
     }
 
-    const iframe = document.getElementById('gas-frame');
-    iframe.addEventListener('load', destroyLoader);
+    iframe.addEventListener('load', removeLoader);
+    setTimeout(removeLoader, 3000); // Batas aman 3 detik langsung hilang
 
-    // Failsafe: Jika internet nyangkut, hancurkan paksa setelah 4 detik
-    setTimeout(destroyLoader, 4000);
-
-
-    // --- 2. SCRIPT PWA & SERVICE WORKER ---
+    // 2. Registrasi PWA Service Worker (V4)
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW Ready:', reg.scope))
-          .catch(err => console.error('SW Error:', err));
+          .then((reg) => console.log('SW v4 aktif:', reg.scope))
+          .catch((err) => console.warn('SW issue:', err));
       });
     }
-
-    let deferredPrompt;
-    const installBtn = document.getElementById('install-btn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      installBtn.style.display = 'none';
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log('User response:', outcome);
-      deferredPrompt = null;
-    });
-
-    window.addEventListener('appinstalled', () => {
-      installBtn.style.display = 'none';
-    });
   </script>
 </body>
 </html>
