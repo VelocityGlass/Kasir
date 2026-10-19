@@ -85,7 +85,15 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      /* PENTING: Mencegah loading screen memblokir klik jika terjadi delay */
+      pointer-events: auto;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
     .spinner {
@@ -193,40 +201,39 @@
   </div>
 
   <script>
-    // 1. Registrasi Service Worker dengan cache-busting (?v=2) agar browser mendeteksi update
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2')
-          .then((registration) => {
-            console.log('ServiceWorker terdaftar dengan versi baru:', registration.scope);
-            // Paksa update cek berkala ke server
-            registration.update();
-          })
-          .catch((err) => {
-            console.warn('Registrasi ServiceWorker gagal:', err);
-          });
-
-        // Reload otomatis satu kali saat Service Worker baru mengambil alih
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-          }
-        });
-      });
-    }
-
-    // 2. Hilangkan Indikator Loading setelah iframe selesai memuat
+    // 1. Matikan Layar Loading Segera agar Tidak Membekukan/Menghalangi Layar
     const iframe = document.getElementById('gas-frame');
     const loadingScreen = document.getElementById('loading-screen');
 
-    iframe.onload = function() {
-      loadingScreen.style.opacity = '0';
-      setTimeout(() => {
-        loadingScreen.style.display = 'none';
-      }, 400);
-    };
+    function dismissLoading() {
+      if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 300);
+      }
+    }
+
+    // Hilangkan jika iframe selesai load
+    iframe.onload = dismissLoading;
+
+    // PENGAMAN (SAFETY TIMEOUT): Paksa hilangkan loading screen setelah 2.5 detik
+    // agar layar tidak pernah bisa freeze atau terhalang lapisan tak terlihat
+    setTimeout(dismissLoading, 2500);
+
+    // 2. Registrasi Service Worker yang Aman (Tanpa Auto-Reload Loop yang bikin freeze)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=3')
+          .then((reg) => {
+            console.log('SW terdaftar:', reg.scope);
+            reg.update();
+          })
+          .catch((err) => {
+            console.warn('SW register error:', err);
+          });
+      });
+    }
 
     // 3. Tangani Install Prompt (Banner PWA di Chrome)
     let deferredPrompt;
@@ -235,10 +242,8 @@
     const btnClose = document.getElementById('btn-close-banner');
 
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Cegah Chrome memunculkan prompt mini bawaan langsung
       e.preventDefault();
       deferredPrompt = e;
-      // Tampilkan banner custom kita
       installBanner.style.display = 'flex';
     });
 
