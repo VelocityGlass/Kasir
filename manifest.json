@@ -1,20 +1,25 @@
 {
-  "name": "Aplikasi Saya",
-  "short_name": "App",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4285f4",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+"name": "Smart WebApp GAS",
+"short_name": "GAS WebApp",
+"description": "Progressive Web Application Google Apps Script",
+"start_url": "./index.html",
+"scope": "./",
+"display": "standalone",
+"orientation": "portrait-primary",
+"background_color": "#0f172a",
+"theme_color": "#2563eb",
+"icons": [
+{
+"src": "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any maskable"
+},
+{
+"src": "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "any maskable"
+}
+]
 }
