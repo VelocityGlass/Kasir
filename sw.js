@@ -1,5 +1,6 @@
-const CACHE_NAME = 'kasir-pwa-v7';
+const CACHE_NAME = 'kasir-pwa-v8';
 
+// HANYA file pembungkus ini yang disimpan di memori HP
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -25,16 +26,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // KUNCI FIX 100%: SW ini SEKARANG HANYA mencegat file index.html dan manifest kita sendiri.
-  // SEMUA koneksi, klik, dan pertukaran data ke Google Apps Script DIBIARKAN LEPAS.
-  // Ini menjamin Service Worker tidak akan memblokir komunikasi Iframe yang memicu freeze!
   const url = new URL(event.request.url);
   
-  if (url.origin === location.origin) {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        return cachedResponse || fetch(event.request);
-      })
-    );
+  // KUNCI ANTI-FREEZE: 
+  // Jika ini adalah request ke Google (iframe), BIARKAN LEPAS TOTAL!
+  // Jangan biarkan Service Worker menyentuh sistem Google sama sekali.
+  if (url.origin !== location.origin) {
+    return; 
   }
+  
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    })
+  );
 });
