@@ -66,8 +66,16 @@
       justify-content: center;
       z-index: 999;
       color: #b2ebf2;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
+    
+    /* CLASS PENTING: Untuk memastikan layar loading hancur dan tidak memblokir sentuhan */
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none !important; 
+    }
+
     .spinner {
       width: 44px;
       height: 44px;
@@ -90,11 +98,11 @@
     <div style="font-size: 14px; font-weight: 500; letter-spacing: 0.5px;">Memuat Aplikasi...</div>
   </div>
 
+  <!-- Iframe DIBERSIHKAN dari onload (diatur lewat javascript di bawah) -->
   <iframe 
     id="gas-frame" 
     src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec" 
-    allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; autoplay"
-    onload="document.getElementById('loader').style.display='none';">
+    allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; autoplay">
   </iframe>
 
   <button id="install-btn">
@@ -103,12 +111,38 @@
   </button>
 
   <script>
-    if ('serviceWorker' in navigator) {
+    // --- 1. SCRIPT ANTI-NYANGKUT (MENGHILANGKAN LOADER) ---
+    const loader = document.getElementById('loader');
+    const iframe = document.getElementById('gas-frame');
+    
+    function hideLoader() {
+      // Tambahkan class agar loader menghilang dan tidak bisa disentuh
+      loader.classList.add('loader-hidden');
+      
+      // Hapus loader sepenuhnya dari HTML setelah 0.5 detik (menunggu transisi opacity selesai)
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 500);
+    }
+
+    // Cara 1: Deteksi normal jika iframe selesai load
+    iframe.addEventListener('load', hideLoader);
+
+    // Cara 2 (Failsafe): Apapun yang terjadi (misal internet lemot/nyangkut), 
+    // paksa hilangkan loader setelah 3.5 detik (3500 ms) agar aplikasi BISA DI-KLIK!
+    setTimeout(hideLoader, 3500);
+
+
+    // --- 2. SCRIPT PWA & SERVICE WORKER ---
+    // Pastikan Service Worker HANYA didaftarkan jika dibuka di domain HTTPS atau HTTP (menghindari error blob di preview)
+    if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('SW Ready:', reg.scope))
           .catch(err => console.error('SW Error:', err));
       });
+    } else {
+      console.log('Membuka di mode Preview/Canvas. Service Worker dilewati.');
     }
 
     let deferredPrompt;
