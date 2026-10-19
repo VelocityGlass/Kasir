@@ -2,17 +2,24 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Kunci viewport: Skala tetap 1.0, minimum 1.0, maksimum 1.0, user-scalable=no -->
+  <!-- Viewport tetap 1.0, kunci zoom untuk pengalaman aplikasi native -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- Favicon & Touch Icon Langsung (Direct CDN Image) -->
-  <link rel="icon" type="image/png" sizes="192x192" href="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w192">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w512">
+  <!-- 
+    Favicon & Apple Touch Icon
+    Dibuat dengan latar putih melingkar dan margin aman (safe-zone)
+    sehingga logo Velocity Coffee & Resto tidak terpotong saat dipotong oleh Android/iOS.
+  -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23ffffff'/%3E%3Cg transform='translate(76, 76) scale(0.70)'%3E%3Ccircle cx='256' cy='220' r='180' fill='%2300454f'/%3E%3Ccircle cx='256' cy='220' r='158' fill='%23ffffff'/%3E%3Ccircle cx='256' cy='220' r='142' fill='%2300454f' opacity='0.08'/%3E%3Cpath d='M180,240 C175,210 185,170 240,170 C295,170 305,210 300,240 C290,285 240,295 240,295 C240,295 190,285 180,240 Z' fill='%238b4513'/%3E%3Cpath d='M300,190 C325,190 340,205 340,225 C340,245 320,260 295,260' fill='none' stroke='%238b4513' stroke-width='16' stroke-linecap='round'/%3E%3Cpath d='M215,150 C210,135 220,125 220,110' fill='none' stroke='%23d97706' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M245,150 C240,130 250,120 250,105' fill='none' stroke='%23d97706' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M275,150 C270,135 280,125 280,110' fill='none' stroke='%23d97706' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M150,295 C210,315 270,315 330,295' fill='none' stroke='%23d97706' stroke-width='16' stroke-linecap='round'/%3E%3Cpath d='M330,170 L240,310 M315,160 L325,185' fill='none' stroke='%2300454f' stroke-width='14' stroke-linecap='round'/%3E%3Ctext x='256' y='425' font-family='Arial, sans-serif' font-weight='900' font-size='42' fill='%2300454f' text-anchor='middle' letter-spacing='2'%3EVELOCITY%3C/text%3E%3Ctext x='256' y='465' font-family='Arial, sans-serif' font-weight='700' font-size='22' fill='%23b45309' text-anchor='middle' letter-spacing='4'%3ECOFFEE %26 RESTO%3C/text%3E%3C/g%3E%3C/svg%3E">
 
-  <!-- Manifest Web PWA Standar Chrome Android -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fdrive.google.com%2Fthumbnail%3Fid%3D1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%26sz%3Dw192%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fdrive.google.com%2Fthumbnail%3Fid%3D1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%26sz%3Dw512%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
 
+  <!-- Manifest teruji untuk Chrome Android: Menggunakan direct image lokal/data URI yang aman dari blokir CORS -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Konfigurasi Tema UI Browser -->
   <meta name="theme-color" content="#00454f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -36,8 +43,6 @@
       background-color: #00454f;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-      text-size-adjust: 100%;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -51,11 +56,11 @@
       touch-action: pan-x pan-y;
     }
 
-    /* Loading Screen Mewah & Bersih */
+    /* Layar Splash Elegan dengan transisi halus */
     #loader {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #005a67 0%, #00454f 60%, #002d34 100%);
+      background: radial-gradient(circle at center, #005a67 0%, #00454f 65%, #002b31 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -66,32 +71,33 @@
       padding: 24px;
     }
 
-    /* Kotak Logo Elegan dengan Margin/Padding Seimbang */
-    .logo-container {
-      width: 140px;
-      height: 140px;
+    /* Wadah Logo: Diberi margin dan padding proporsional agar gambar tidak terpotong */
+    .logo-badge {
+      width: 150px;
+      height: 150px;
       background: #ffffff;
-      border-radius: 30px;
+      border-radius: 36px;
       padding: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2);
       margin-bottom: 24px;
-      animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .loader-logo {
+    .logo-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
+      border-radius: 12px;
     }
 
     .spinner {
       width: 36px;
       height: 36px;
-      border: 3.5px solid rgba(255, 255, 255, 0.15);
+      border: 3.5px solid rgba(255, 255, 255, 0.18);
       border-top-color: #38bdf8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -99,9 +105,9 @@
     }
 
     .loader-title {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
       color: #ffffff;
       margin-bottom: 4px;
     }
@@ -117,35 +123,27 @@
       to { transform: rotate(360deg); }
     }
 
-    @keyframes popIn {
-      0% {
-        opacity: 0;
-        transform: scale(0.85);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
+    @keyframes zoomIn {
+      0% { opacity: 0; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Layar Pembuka / Splash Screen -->
   <div id="loader">
-    <div class="logo-container">
+    <div class="logo-badge">
       <img 
         src="https://drive.google.com/thumbnail?id=1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno&sz=w512" 
         alt="Velocity Glass Logo" 
-        class="loader-logo"
-        onerror="this.src='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'">
+        class="logo-img"
+        onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno';">
     </div>
     <div class="spinner"></div>
     <div class="loader-title">Velocity Kasir</div>
     <div class="loader-subtitle">Menyiapkan sistem transaksi...</div>
   </div>
 
-  <!-- Iframe Aplikasi Google Apps Script -->
   <iframe 
     id="app-frame" 
     src="https://script.google.com/macros/s/AKfycbxKlUnTTVgB98_33wBQpX6oHPpQOio9CFo42kDY19sUK3bMCU6R0N6kCmoWizeipeyQ/exec" 
@@ -163,44 +161,37 @@
       }
     }
 
-    // Fallback loader jika jaringan lambat
+    // Batas waktu maksimal loader 6 detik
     setTimeout(hideLoader, 6000);
 
-    // 1. Blokir Pinch-to-Zoom (Sentuhan lebih dari 1 jari)
+    // 1. Blokir multi-touch zoom
     document.addEventListener('touchstart', function (e) {
-      if (e.touches.length > 1) {
-        e.preventDefault();
-      }
+      if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
 
-    // 2. Blokir Gestur Skala (iOS Safari & Chrome Touch)
+    // 2. Blokir gestur zoom bawaan iOS
     document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
     document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
     document.addEventListener('gestureend', function (e) { e.preventDefault(); });
 
-    // 3. Blokir Double-Tap Zoom
+    // 3. Blokir double tap zoom
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
       const now = Date.now();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
+      if (now - lastTouchEnd <= 300) e.preventDefault();
       lastTouchEnd = now;
     }, { passive: false });
 
-    // 4. Blokir Ctrl + Scroll Wheel
+    // 4. Blokir zoom roda mouse / touchpad
     document.addEventListener('wheel', function (e) {
-      if (e.ctrlKey) {
-        e.preventDefault();
-      }
+      if (e.ctrlKey) e.preventDefault();
     }, { passive: false });
 
-    // Registrasi Service Worker PWA
+    // 5. Registrasi Service Worker PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker Velocity Kasir Aktif:', reg.scope))
-          .catch(err => console.warn('SW Registrasi (opsional):', err));
+          .catch(err => console.log('SW Note:', err));
       });
     }
   </script>
