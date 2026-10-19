@@ -31,42 +31,63 @@
       overflow: hidden;
       background-color: #0f172a;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
-    .iframe-app {
+    
+    /* Wrapper penampung iframe agar scroll dan touch responsif di HP */
+    .app-viewport {
       position: absolute;
       top: 0;
       left: 0;
+      right: 0;
+      bottom: 0;
       width: 100%;
       height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      z-index: 1;
+    }
+
+    .iframe-app {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
       border: 0;
-      z-index: 10;
+      display: block;
+    }
+
+    /* Pastikan loader tidak pernah memblokir sentuhan jari di HP */
+    .loader-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
     }
   </style>
 </head>
-<body class="flex flex-col h-screen w-screen overflow-hidden select-none bg-slate-900">
+<body class="h-screen w-screen overflow-hidden bg-slate-900">
 
   <!-- Banner Notifikasi Install PWA (Akan muncul otomatis saat siap diinstal) -->
-  <div id="pwa-install-bar" class="hidden z-50 bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-700/80 px-4 py-2.5 flex items-center justify-between transition-all duration-300">
+  <div id="pwa-install-bar" class="hidden fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-700/80 px-4 py-2.5 flex items-center justify-between shadow-lg">
     <div class="flex items-center gap-3">
       <img src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" alt="Logo" class="w-8 h-8 rounded-lg shadow-md border border-slate-700 object-cover" onerror="this.src='https://placehold.co/192x192/2563eb/ffffff?text=App'">
       <div>
         <h1 class="text-sm font-semibold text-slate-100 leading-tight">Smart WebApp</h1>
-        <p class="text-xs text-slate-400">Pasang aplikasi ini di perangkat Anda</p>
+        <p class="text-xs text-slate-400">Pasang aplikasi ini di layar utama</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button id="btn-install" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-semibold py-1.5 px-3.5 rounded-full shadow-lg transition">
+      <button id="btn-install" type="button" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-semibold py-1.5 px-3.5 rounded-full shadow-lg transition">
         <i class="bi bi-download"></i>
         <span>Install</span>
       </button>
-      <button id="btn-close-banner" class="text-slate-400 hover:text-slate-200 p-1 rounded-full hover:bg-slate-800 transition">
+      <button id="btn-close-banner" type="button" class="text-slate-400 hover:text-slate-200 p-1 rounded-full hover:bg-slate-800 transition">
         <i class="bi bi-x text-lg"></i>
       </button>
     </div>
   </div>
 
-  <!-- Splash Screen Loading saat pertama dibuka -->
-  <div id="splash-loader" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-900 text-white transition-opacity duration-500">
+  <!-- Splash Screen Loading (Dilengkapi pointer-events-none saat mulai hilang) -->
+  <div id="splash-loader" class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-slate-900 text-white transition-opacity duration-300 pointer-events-none select-none">
     <div class="relative flex items-center justify-center mb-4">
       <div class="w-20 h-20 rounded-2xl p-1 bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-2xl flex items-center justify-center">
         <img src="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno" class="w-full h-full object-cover rounded-xl" alt="Icon" onerror="this.src='https://placehold.co/192x192/2563eb/ffffff?text=GAS'">
@@ -82,18 +103,20 @@
     </div>
   </div>
 
-  <!-- Target WebApp Google Apps Script Anda -->
-  <iframe 
-    id="gas-app-frame" 
-    class="iframe-app"
-    src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec"
-    allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb; clipboard-read; clipboard-write;"
-    sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-downloads"
-    onload="hideSplashScreen()">
-  </iframe>
+  <!-- Container khusus mobile touch & target WebApp Google Apps Script -->
+  <div class="app-viewport">
+    <iframe 
+      id="gas-app-frame" 
+      class="iframe-app"
+      src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec"
+      allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb; clipboard-read; clipboard-write;"
+      sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-downloads"
+      onload="hideSplashScreen()">
+    </iframe>
+  </div>
 
   <script>
-    // 1. Registrasi Service Worker PWA (Aman untuk HTTP/HTTPS & Preview Canvas)
+    // 1. Registrasi Service Worker PWA (Hanya aktif di domain https/http asli)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         const isSupportedProtocol = window.location.protocol === 'https:' || window.location.protocol === 'http:';
@@ -119,17 +142,10 @@
 
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) {
-        // Panduan jika browser belum memicu event otomatis
-        const hint = document.createElement('div');
-        hint.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-4 py-2.5 rounded-xl shadow-2xl z-50';
-        hint.innerHTML = '<i class="bi bi-info-circle me-1"></i> Klik menu titik tiga (⋮) di Chrome &rarr; pilih <b>"Instal aplikasi"</b>';
-        document.body.appendChild(hint);
-        setTimeout(() => hint.remove(), 4000);
         return;
       }
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log('Hasil respon user:', outcome);
+      await deferredPrompt.userChoice;
       deferredPrompt = null;
       installBar.classList.add('hidden');
     });
@@ -138,19 +154,19 @@
       installBar.classList.add('hidden');
     });
 
-    // 3. Menghilangkan Splash Loader saat WebApp GAS selesai dimuat
+    // 3. Menghilangkan Splash Loader seketika agar touch event langsung tembus ke WebApp
     function hideSplashScreen() {
       const loader = document.getElementById('splash-loader');
       if (loader) {
-        loader.style.opacity = '0';
+        loader.classList.add('loader-hidden');
         setTimeout(() => {
-          loader.style.display = 'none';
-        }, 500);
+          loader.remove(); // Hapus elemen dari DOM agar tidak ada overlay sama sekali
+        }, 300);
       }
     }
 
-    // Fallback otomatis jika koneksi lambat
-    setTimeout(hideSplashScreen, 3500);
+    // Safety fallback: hapus loader maksimal 2.5 detik jika koneksi lambat
+    setTimeout(hideSplashScreen, 2500);
   </script>
 </body>
 </html>
