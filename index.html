@@ -2,249 +2,201 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Viewport diatur ke lebar desktop (1024px) agar tampilan di mobile tetap berskala desktop -->
-  <meta name="viewport" content="width=1024, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>WebApp Desktop Mode</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Smart WebApp</title>
 
-  <!-- Status Bar Kontras: Terang (#f8f9fa teks gelap) & Gelap (#121212 teks putih) -->
-  <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
-
-  <!-- Ikon Web & Favicon -->
-  <link rel="icon" href="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd" type="image/png">
-  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd">
-
-  <!-- Hubungkan file manifest.json eksternal -->
-  <link rel="manifest" href="./manifest.json">
-
-  <!-- Dukungan Standalone / Fullscreen untuk iOS & Android -->
+  <!-- Meta untuk Fullscreen & Mobile Standalone -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SmartApp">
+
+  <!-- Adaptive Theme Color (Terang / Gelap agar status bar tidak tabrakan warna) -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
+
+  <!-- Favicon & Touch Icon -->
+  <link rel="icon" type="image/png" id="dynamic-favicon" href="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd">
+
+  <!-- Tailwind CSS & Bootstrap Icons untuk UI interaktif jika diperlukan -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
-    :root {
-      --bg-color: #f8f9fa;
-      --text-color: #212529;
-      --loader-accent: #0d6efd;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #121212;
-        --text-color: #e9ecef;
-        --loader-accent: #3b82f6;
-      }
-    }
-
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    html, body {
       margin: 0;
       padding: 0;
-    }
-
-    html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-
-    /* Area Iframe Fullscreen */
-    #app-container {
-      position: absolute;
-      top: 0;
-      left: 0;
+    @media (prefers-color-scheme: dark) {
+      html, body {
+        background-color: #0f172a;
+        color: #f8fafc;
+      }
+    }
+    /* Frame utama Google Apps Script */
+    #gas-frame {
       width: 100vw;
       height: 100vh;
       border: none;
-      display: flex;
-      flex-direction: column;
+      display: block;
+      transition: opacity 0.3s ease-in-out;
     }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      flex: 1;
-      background-color: transparent;
-    }
-
-    /* Layar Loading */
-    #loading-screen {
-      position: fixed;
+    /* Loading overlay */
+    #app-loader {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--bg-color);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      /* PENTING: Mencegah loading screen memblokir klik jika terjadi delay */
-      pointer-events: auto;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
-
-    #loading-screen.hidden {
-      opacity: 0 !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-top-color: var(--loader-accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .spinner {
-        border-color: rgba(255, 255, 255, 0.15);
-        border-top-color: var(--loader-accent);
-      }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Pop-up Banner Ajakan Install PWA */
+    /* Install Banner Floating Bottom */
     #install-banner {
       display: none;
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ffffff;
-      color: #212529;
-      padding: 12px 20px;
-      border-radius: 50px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      z-index: 10000;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      animation: slideUp 0.3s ease-out;
+      animation: slideUp 0.3s ease-out forwards;
     }
-
-    @media (prefers-color-scheme: dark) {
-      #install-banner {
-        background: #1e1e1e;
-        color: #f1f1f1;
-        border-color: #333333;
-      }
-    }
-
     @keyframes slideUp {
-      from { transform: translate(-50%, 30px); opacity: 0; }
-      to { transform: translate(-50%, 0); opacity: 1; }
-    }
-
-    .btn-install {
-      background-color: #0d6efd;
-      color: #fff;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-
-    .btn-install:hover {
-      background-color: #0b5ed7;
-    }
-
-    .btn-close {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      color: inherit;
-      opacity: 0.6;
-      padding: 0 4px;
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
-<body>
-  <!-- Layar Pembuka / Loading -->
-  <div id="loading-screen">
-    <div class="spinner"></div>
-    <p style="margin-top: 16px; font-weight: 500; font-size: 15px;">Membuka Aplikasi...</p>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col relative w-full h-full">
+
+  <!-- Screen Loading Animasi Halus -->
+  <div id="app-loader" class="bg-white/80 dark:bg-slate-900/80">
+    <div class="relative flex items-center justify-center mb-4">
+      <img 
+        src="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd" 
+        alt="Logo" 
+        class="w-16 h-16 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 object-cover"
+        onerror="this.src='https://placehold.co/100x100/3b82f6/ffffff?text=App';"
+      >
+      <div class="absolute -inset-1 rounded-2xl border-2 border-blue-500 animate-ping opacity-25"></div>
+    </div>
+    <div class="flex items-center space-x-2">
+      <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+      <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+      <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+    </div>
+    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-3 tracking-wide">Memuat Aplikasi...</span>
   </div>
 
-  <!-- Pop-up Tombol Pasang Aplikasi Chrome -->
-  <div id="install-banner">
-    <span>Pasang aplikasi ke layar utama?</span>
-    <button class="btn-install" id="btn-install-app">Install</button>
-    <button class="btn-close" id="btn-close-banner">✕</button>
+  <!-- Banner Tombol Install (Muncul otomatis jika belum terinstal) -->
+  <div id="install-banner" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-white/95 dark:bg-slate-800/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-40 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <img src="https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd" class="w-10 h-10 rounded-xl shadow-sm object-cover" onerror="this.src='https://placehold.co/80x80/3b82f6/ffffff?text=App';">
+      <div>
+        <h4 class="font-semibold text-sm leading-tight text-slate-900 dark:text-white">Install WebApp</h4>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Jalankan fullscreen tanpa browser bar</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-close-banner" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2 py-1.5 rounded-lg">Nanti</button>
+      <button id="btn-install" class="text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl shadow-sm transition active:scale-95 flex items-center gap-1.5">
+        <i class="bi bi-download"></i> Pasang
+      </button>
+    </div>
   </div>
 
-  <!-- Iframe Aplikasi Google Apps Script dengan izin penuh kamera, mikrofon, print, & fullscreen -->
-  <div id="app-container">
-    <iframe 
-      id="gas-frame"
-      src="https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec"
-      allow="camera *; microphone *; geolocation *; display-capture *; autoplay *; clipboard-write *; clipboard-read *; fullscreen *; printing *;"
-      allowfullscreen="true">
-    </iframe>
-  </div>
+  <!-- WebApp Frame Google Apps Script -->
+  <iframe 
+    id="gas-frame" 
+    src="https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec"
+    allow="geolocation; microphone; camera; midi; encrypted-media; clipboard-read; clipboard-write; fullscreen"
+    sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-downloads"
+    loading="eager"
+  ></iframe>
 
+  <!-- Script PWA & Manajemen Instalasi -->
   <script>
-    // 1. Matikan Layar Loading Segera agar Tidak Membekukan/Menghalangi Layar
-    const iframe = document.getElementById('gas-frame');
-    const loadingScreen = document.getElementById('loading-screen');
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxu2Wy_9pVuM2iWZFAbzIYZU3M8KlX4d3XTtuWjMWE97QRNh_jn6EHPl8hPOoB6DeU-/exec";
+    const ICON_DIRECT_URL = "https://lh3.googleusercontent.com/d/1WQt7gNQoMTc_nsGCWRh-0y42JPvig_Pd";
 
-    function dismissLoading() {
-      if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-        loadingScreen.classList.add('hidden');
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-        }, 300);
-      }
-    }
-
-    // Hilangkan jika iframe selesai load
-    iframe.onload = dismissLoading;
-
-    // PENGAMAN (SAFETY TIMEOUT): Paksa hilangkan loading screen setelah 2.5 detik
-    // agar layar tidak pernah bisa freeze atau terhalang lapisan tak terlihat
-    setTimeout(dismissLoading, 2500);
-
-    // 2. Registrasi Service Worker yang Aman (Tanpa Auto-Reload Loop yang bikin freeze)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3')
-          .then((reg) => {
-            console.log('SW terdaftar:', reg.scope);
-            reg.update();
-          })
-          .catch((err) => {
-            console.warn('SW register error:', err);
-          });
-      });
-    }
-
-    // 3. Tangani Install Prompt (Banner PWA di Chrome)
-    let deferredPrompt;
+    const frame = document.getElementById('gas-frame');
+    const loader = document.getElementById('app-loader');
     const installBanner = document.getElementById('install-banner');
-    const btnInstall = document.getElementById('btn-install-app');
-    const btnClose = document.getElementById('btn-close-banner');
+    const btnInstall = document.getElementById('btn-install');
+    const btnCloseBanner = document.getElementById('btn-close-banner');
+
+    let deferredPrompt = null;
+
+    // Menghilangkan loading ketika frame selesai dimuat
+    frame.addEventListener('load', () => {
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.visibility = 'hidden';
+        }, 400);
+      }, 500);
+    });
+
+    // Fallback jika iframe lambat merespons (maksimal 6 detik loading)
+    setTimeout(() => {
+      if (loader.style.visibility !== 'hidden') {
+        loader.style.opacity = '0';
+        setTimeout(() => { loader.style.visibility = 'hidden'; }, 400);
+      }
+    }, 6000);
+
+    // Membuat file manifest.json secara dinamis di memori browser
+    const manifestJson = {
+      name: "Smart WebApp GAS",
+      short_name: "SmartApp",
+      description: "Aplikasi Fullscreen Google Apps Script",
+      start_url: window.location.href,
+      display: "standalone",
+      background_color: "#0f172a",
+      theme_color: "#f8fafc",
+      icons: [
+        {
+          src: ICON_DIRECT_URL,
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any maskable"
+        },
+        {
+          src: ICON_DIRECT_URL,
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable"
+        }
+      ]
+    };
+
+    const manifestBlob = new Blob([JSON.stringify(manifestJson)], { type: 'application/json' });
+    const manifestUrl = URL.createObjectURL(manifestBlob);
+    const linkManifest = document.createElement('link');
+    linkManifest.rel = 'manifest';
+    linkManifest.href = manifestUrl;
+    document.head.appendChild(linkManifest);
+
+    // Deteksi apakah sedang dibuka dalam mode standalone (terinstal di HP)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBanner.style.display = 'flex';
+      if (!isStandalone) {
+        installBanner.style.display = 'flex';
+      }
     });
 
     btnInstall.addEventListener('click', async () => {
@@ -255,12 +207,39 @@
           installBanner.style.display = 'none';
         }
         deferredPrompt = null;
+      } else {
+        // Panduan jika browser iOS Safari atau Chrome versi lain
+        alert("Untuk memasang di Layar Utama:\n1. Buka menu titik tiga browser (atau tombol Share di iPhone)\n2. Pilih 'Tambahkan ke Layar Utama' / 'Install App'");
       }
     });
 
-    btnClose.addEventListener('click', () => {
+    btnCloseBanner.addEventListener('click', () => {
       installBanner.style.display = 'none';
     });
+
+    window.addEventListener('appinstalled', () => {
+      installBanner.style.display = 'none';
+      deferredPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE_NAME = 'gas-pwa-cache-v1';
+        self.addEventListener('install', (e) => {
+          self.skipWaiting();
+        });
+        self.addEventListener('activate', (e) => {
+          e.waitUntil(clients.claim());
+        });
+        self.addEventListener('fetch', (e) => {
+          // Pass-through fetch
+          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+        });
+      `;
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Note:', err));
+    }
   </script>
 </body>
 </html>
