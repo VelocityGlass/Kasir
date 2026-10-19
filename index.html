@@ -2,14 +2,11 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kasir Cafe</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00454f">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
   <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
@@ -20,81 +17,35 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      height: 100dvh; /* Dynamic viewport height untuk menangani keyboard HP */
-      overflow: hidden;
-      background: #00454f;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
+      background-color: #00454f;
+      overflow: hidden; /* Mencegah layar utama scroll, biarkan iframe yang scroll */
     }
     
-    /* Iframe Kasir dibuat mandiri dan fleksibel */
+    /* Iframe absolut memeluk layar */
     #gas-frame {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      outline: none;
-      display: block;
-      background: #00454f;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* Indikator loading minimal di paling atas agar tidak menutupi area klik */
-    #top-bar-loader {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, #4dd0e1, #00acc1, #4dd0e1);
-      background-size: 200% 100%;
-      animation: barMove 1.2s linear infinite;
-      z-index: 10000;
-      pointer-events: none !important; /* Wajib agar sentuhan tembus langsung ke kasir */
-      transition: opacity 0.3s ease;
-    }
-
-    @keyframes barMove {
-      0% { background-position: 100% 0; }
-      100% { background-position: -100% 0; }
+      height: 100%;
+      border: none;
+      background-color: #00454f;
     }
   </style>
 </head>
 <body>
 
-  <!-- Progress bar tipis di tepi atas layar (0% mengganggu sentuhan) -->
-  <div id="top-bar-loader"></div>
-
-  <!-- Iframe dengan atribut sandbox lengkap untuk form kasir & anti-freeze -->
   <iframe 
     id="gas-frame" 
     src="https://script.google.com/macros/s/AKfycbzSMI5Hm8ttuevzpHjoYFCTm5eMqLBQiKqsPNY_4sko6sG6caBXGQ85GgNGXhs8Rbj8/exec" 
-    allow="geolocation; microphone; camera; payment; autoplay"
-    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation">
+    allow="geolocation; microphone; camera; autoplay">
   </iframe>
 
   <script>
-    // 1. Hilangkan progress bar saat iframe sudah selesai dimuat
-    const iframe = document.getElementById('gas-frame');
-    const loader = document.getElementById('top-bar-loader');
-
-    function removeLoader() {
-      if (loader) {
-        loader.style.opacity = '0';
-        setTimeout(() => {
-          if (loader) loader.remove();
-        }, 300);
-      }
-    }
-
-    iframe.addEventListener('load', removeLoader);
-    setTimeout(removeLoader, 3000); // Batas aman 3 detik langsung hilang
-
-    // 2. Registrasi PWA Service Worker (V4)
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then((reg) => console.log('SW v4 aktif:', reg.scope))
+          .then((reg) => console.log('SW v5 aktif'))
           .catch((err) => console.warn('SW issue:', err));
       });
     }
