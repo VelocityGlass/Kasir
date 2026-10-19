@@ -1,5 +1,5 @@
-// Service Worker untuk Cache PWA Shell
-const CACHE_NAME = 'gas-pwa-v1';
+// Ubah versi ke v2 agar HP dipaksa mendownload settingan baru!
+const CACHE_NAME = 'kasir-pwa-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,9 +9,7 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
@@ -28,14 +26,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Hanya tangani asset wrapper lokal agar tidak menabrak dynamic request Apps Script
   if (event.request.url.includes('script.google.com')) {
-    return; // Langsung teruskan ke jaringan online
+    return;
   }
-
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request).then((response) => response || fetch(event.request))
   );
 });
