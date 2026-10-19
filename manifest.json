@@ -4,8 +4,8 @@
 "description": "Aplikasi Desktop Google Apps Script Standalone",
 "start_url": "./index.html",
 "display": "standalone",
-"background_color": "#0f172a",
-"theme_color": "#1e293b",
+"background_color": "#00454f",
+"theme_color": "#00454f",
 "orientation": "any",
 "icons": [
 {
