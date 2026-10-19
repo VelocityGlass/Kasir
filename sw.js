@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gas-pwa-v1';
+const CACHE_NAME = 'gas-pwa-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
