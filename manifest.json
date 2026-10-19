@@ -1,13 +1,13 @@
 {
-"name": "GAS WebApp",
-"short_name": "GAS WebApp",
-"description": "Aplikasi WebApp Standalone",
+"name": "WebApp Desktop Mode",
+"short_name": "GAS App",
 "start_url": "./index.html",
 "scope": "./",
-"display": "standalone",
-"background_color": "#00454f",
-"theme_color": "#00454f",
-"orientation": "portrait-primary",
+"display": "fullscreen",
+"display_override": ["fullscreen", "standalone", "window-controls-overlay"],
+"orientation": "any",
+"background_color": "#ffffff",
+"theme_color": "#f8f9fa",
 "icons": [
 {
 "src": "https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno",
