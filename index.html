@@ -6,17 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   <title>Velocity Kasir</title>
 
-  <!-- 
-    Ikon adaptif dengan inner padding & safe-area:
-    Dibuat dengan format SVG Data-URI agar memiliki margin/padding di sekeliling logo 
-    sehingga tidak terpotong saat dijadikan squircle/lingkaran oleh Android maupun iOS.
-  -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='46' y='46' width='420' height='420' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
-  
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='56' y='56' width='400' height='400' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
+  <!-- Favicon & Apple Touch Icon dengan Padding Aman -->
+  <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='64' y='64' width='384' height='384' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
+  <link id="apple-icon" rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno">
 
-  <!-- Manifest Web dengan padding aman dan background netral putih untuk logo maskable -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20fill%3D'%2523ffffff'%2F%253E%253Cimage%20href%3D'https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'%20x%3D'64'%20y%3D'64'%20width%3D'384'%20height%3D'384'%20preserveAspectRatio%3D'xMidYMid%20meet'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <!-- Manifest Web PWA dengan padding safe-zone agar tidak terpotong squircle/lingkaran -->
+  <link id="manifest-tag" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20fill%3D'%2523ffffff'%2F%253E%253Cimage%20href%3D'https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'%20x%3D'72'%20y%3D'72'%20width%3D'368'%20height%3D'368'%20preserveAspectRatio%3D'xMidYMid%20meet'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
 
   <meta name="theme-color" content="#00454f">
   <meta name="mobile-web-app-capable" content="yes">
@@ -30,7 +25,6 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      /* Mencegah gesture zoom bawaan browser */
       touch-action: pan-x pan-y;
     }
     
@@ -38,7 +32,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      position: fixed; /* Mencegah overscroll bounce */
+      position: fixed;
       background-color: #00454f;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-text-size-adjust: 100%;
@@ -57,11 +51,11 @@
       touch-action: pan-x pan-y;
     }
 
-    /* Loading Screen Mewah & Rapi dengan warna #00454f */
+    /* Loading Screen Mewah & Bersih */
     #loader {
       position: fixed;
       inset: 0;
-      background: linear-gradient(180deg, #00454f 0%, #002d34 100%);
+      background: radial-gradient(circle at center, #005a67 0%, #00454f 60%, #002d34 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -72,32 +66,32 @@
       padding: 24px;
     }
 
-    /* Kartu Logo dengan Padding & Border Halus agar tidak terpotong */
+    /* Kotak Logo Elegan dengan Margin/Padding Seimbang */
     .logo-container {
-      width: 130px;
-      height: 130px;
+      width: 140px;
+      height: 140px;
       background: #ffffff;
-      border-radius: 28px;
+      border-radius: 30px;
       padding: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
-      margin-bottom: 28px;
-      animation: pulseIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      margin-bottom: 24px;
+      animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .loader-logo {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* Memastikan logo utuh tanpa terpotong */
+      object-fit: contain;
       display: block;
     }
 
     .spinner {
-      width: 38px;
-      height: 38px;
-      border: 3px solid rgba(255, 255, 255, 0.12);
+      width: 36px;
+      height: 36px;
+      border: 3.5px solid rgba(255, 255, 255, 0.15);
       border-top-color: #38bdf8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -105,10 +99,10 @@
     }
 
     .loader-title {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      color: #f8fafc;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: #ffffff;
       margin-bottom: 4px;
     }
 
@@ -116,17 +110,17 @@
       font-size: 13px;
       font-weight: 400;
       letter-spacing: 0.2px;
-      color: #94a3b8;
+      color: #94d2bd;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    @keyframes pulseIn {
+    @keyframes popIn {
       0% {
         opacity: 0;
-        transform: scale(0.9);
+        transform: scale(0.85);
       }
       100% {
         opacity: 1;
@@ -137,7 +131,7 @@
 </head>
 <body>
 
-  <!-- Layar Pembuka / Splash Screen yang Rapi & Proporsional -->
+  <!-- Layar Pembuka / Splash Screen -->
   <div id="loader">
     <div class="logo-container">
       <img 
@@ -172,6 +166,42 @@
     // Fallback loader jika jaringan lambat
     setTimeout(hideLoader, 6000);
 
+    // Render icon dengan padding aman otomatis via Canvas
+    function generatePaddedIcon(imgSrc) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        const size = 512;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Latar belakang putih bersih
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        // Safe zone padding (margin 16% di setiap sisi)
+        const padding = size * 0.16;
+        const drawWidth = size - (padding * 2);
+        const drawHeight = (img.naturalHeight / img.naturalWidth) * drawWidth;
+        const drawY = (size - drawHeight) / 2;
+
+        ctx.drawImage(img, padding, drawY, drawWidth, drawHeight);
+
+        try {
+          const dataUrl = canvas.toDataURL('image/png');
+          const appleIcon = document.getElementById('apple-icon');
+          if (appleIcon) appleIcon.href = dataUrl;
+        } catch (e) {
+          console.warn('Canvas export skipped:', e);
+        }
+      };
+      img.src = imgSrc;
+    }
+
+    generatePaddedIcon('https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno');
+
     // 1. Blokir Pinch-to-Zoom (Sentuhan lebih dari 1 jari)
     document.addEventListener('touchstart', function (e) {
       if (e.touches.length > 1) {
@@ -180,17 +210,11 @@
     }, { passive: false });
 
     // 2. Blokir Gestur Skala (iOS Safari & Chrome Touch)
-    document.addEventListener('gesturestart', function (e) {
-      e.preventDefault();
-    });
-    document.addEventListener('gesturechange', function (e) {
-      e.preventDefault();
-    });
-    document.addEventListener('gestureend', function (e) {
-      e.preventDefault();
-    });
+    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+    document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
+    document.addEventListener('gestureend', function (e) { e.preventDefault(); });
 
-    // 3. Blokir Double-Tap Zoom (Ketukan dua kali beruntun)
+    // 3. Blokir Double-Tap Zoom
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
       const now = Date.now();
@@ -200,14 +224,14 @@
       lastTouchEnd = now;
     }, { passive: false });
 
-    // 4. Blokir Ctrl + Scroll Wheel (Zoom via mouse/trackpad)
+    // 4. Blokir Ctrl + Scroll Wheel
     document.addEventListener('wheel', function (e) {
       if (e.ctrlKey) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    // Registrasi Service Worker PWA (jika file sw.js tersedia)
+    // Registrasi Service Worker PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
