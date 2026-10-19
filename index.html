@@ -193,16 +193,27 @@
   </div>
 
   <script>
-    // 1. Registrasi Service Worker dari file terpisah sw.js
+    // 1. Registrasi Service Worker dengan cache-busting (?v=2) agar browser mendeteksi update
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./sw.js?v=2')
           .then((registration) => {
-            console.log('ServiceWorker berhasil terdaftar:', registration.scope);
+            console.log('ServiceWorker terdaftar dengan versi baru:', registration.scope);
+            // Paksa update cek berkala ke server
+            registration.update();
           })
           .catch((err) => {
             console.warn('Registrasi ServiceWorker gagal:', err);
           });
+
+        // Reload otomatis satu kali saat Service Worker baru mengambil alih
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
     }
 
