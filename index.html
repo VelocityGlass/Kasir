@@ -7,17 +7,20 @@
   <title>Velocity Kasir</title>
 
   <!-- 
-    Favicon & Apple Touch Icon
-    Dibuat dengan latar putih melingkar dan margin aman (safe-zone)
-    sehingga logo Velocity Coffee & Resto tidak terpotong saat dipotong oleh Android/iOS.
+    Favicon & Apple Touch Icon dengan margin aman (safe-zone 15%)
+    Menggunakan gambar logo asli Google Drive (ID: 1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno) 
+    yang dibungkus dalam kanvas SVG putih agar logo & tulisan tidak pernah terpotong.
   -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23ffffff'/%3E%3Cg transform='translate(76, 76) scale(0.70)'%3E%3Ccircle cx='256' cy='220' r='180' fill='%2300454f'/%3E%3Ccircle cx='256' cy='220' r='158' fill='%23ffffff'/%3E%3Ccircle cx='256' cy='220' r='142' fill='%2300454f' opacity='0.08'/%3E%3Cpath d='M180,240 C175,210 185,170 240,170 C295,170 305,210 300,240 C290,285 240,295 240,295 C240,295 190,285 180,240 Z' fill='%238b4513'/%3E%3Cpath d='M300,190 C325,190 340,205 340,225 C340,245 320,260 295,260' fill='none' stroke='%238b4513' stroke-width='16' stroke-linecap='round'/%3E%3Cpath d='M215,150 C210,135 220,125 220,110' fill='none' stroke='%23d97706' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M245,150 C240,130 250,120 250,105' fill='none' stroke='%23d97706' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M275,150 C270,135 280,125 280,110' fill='none' stroke='%23d97706' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M150,295 C210,315 270,315 330,295' fill='none' stroke='%23d97706' stroke-width='16' stroke-linecap='round'/%3E%3Cpath d='M330,170 L240,310 M315,160 L325,185' fill='none' stroke='%2300454f' stroke-width='14' stroke-linecap='round'/%3E%3Ctext x='256' y='425' font-family='Arial, sans-serif' font-weight='900' font-size='42' fill='%2300454f' text-anchor='middle' letter-spacing='2'%3EVELOCITY%3C/text%3E%3Ctext x='256' y='465' font-family='Arial, sans-serif' font-weight='700' font-size='22' fill='%23b45309' text-anchor='middle' letter-spacing='4'%3ECOFFEE %26 RESTO%3C/text%3E%3C/g%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='40' y='40' width='432' height='432' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
 
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23ffffff'/%3E%3Cimage href='https://lh3.googleusercontent.com/d/1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno' x='40' y='40' width='432' height='432' preserveAspectRatio='xMidYMid meet'/%3E%3C/svg%3E">
 
-  <!-- Manifest teruji untuk Chrome Android: Menggunakan direct image lokal/data URI yang aman dari blokir CORS -->
-  <link rel="manifest" href="manifest.json">
+  <!-- 
+    Web App Manifest Inline (Data URI)
+    Mengunci Chrome Android agar langsung mengambil logo Velocity ber-padding aman 
+    dan TIDAK beralih ke favicon default orang berdasi bawaan Google Script!
+  -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Velocity%20Kasir%22%2C%22short_name%22%3A%22Velocity%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2300454f%22%2C%22theme_color%22%3A%22%2300454f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20rx%3D'110'%20fill%3D'%2523ffffff'%2F%253E%253Cimage%20href%3D'https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno'%20x%3D'40'%20y%3D'40'%20width%3D'432'%20height%3D'432'%20preserveAspectRatio%3D'xMidYMid%20meet'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1Uac4sUkGDifGEB1vD4mCB_r1dp4wftno%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
 
   <!-- Konfigurasi Tema UI Browser -->
   <meta name="theme-color" content="#00454f">
