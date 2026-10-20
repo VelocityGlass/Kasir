@@ -3,64 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kasir</title>
-  <link rel="manifest" href="./manifest.json">
+  <title>Velocity Kasir</title>
+
+  <!-- PWA Settings -->
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#121212">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" href="icon-512.png">
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #121212; overflow: hidden; font-family: sans-serif; }
-    #setup { display: flex; height: 100%; align-items: center; justify-content: center; padding: 20px; }
-    .box { background: #222; padding: 24px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; color: #fff; }
-    input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #444; background: #333; color: #fff; font-size: 16px; }
-    button { width: 100%; padding: 12px; background: #0d6efd; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; }
-    iframe { width: 100%; height: 100%; border: none; display: none; }
-    #gear { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; background: #fff; border-radius: 50%; width: 30px; height: 30px; border: none; font-size: 14px; }
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    h1 { font-size: 22px; margin-bottom: 8px; font-weight: 600; }
+    p { font-size: 14px; color: #888; margin-bottom: 25px; }
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background-color: #0d6efd;
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+      transition: background 0.2s;
+    }
+    .btn:active { background-color: #0b5ed7; }
+    .footer-note {
+      position: absolute;
+      bottom: 25px;
+      font-size: 12px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
-  <div id="setup">
-    <div class="box">
-      <h3>Masukkan URL Web</h3>
-      <input type="url" id="target-url" placeholder="https://...">
-      <button onclick="launch()">Buka</button>
-    </div>
-  </div>
+  <img src="icon-512.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+  <h1>Velocity Kasir</h1>
+  <p>Memuat sistem kasir POS...</p>
 
-  <iframe id="frame" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-modals"></iframe>
-  <button id="gear" onclick="resetUrl()">⚙</button>
+  <a id="btn-open" class="btn" href="#">Buka Aplikasi Kasir</a>
+
+  <div class="footer-note">Mode Desktop Clean</div>
 
   <script>
+    // URL WebApp Google Apps Script Anda
+    const TARGET_URL = "https://script.google.com/macros/s/AKfycbxWifql7ClYcw9s2Yxbq7kQOeoJm2wDMrWFwZedTTrl-vW11vm0RE8M11p1kKu8oAjt/exec";
+
+    document.getElementById('btn-open').href = TARGET_URL;
+
+    // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
 
-    const key = 'app_direct_url';
-    const saved = localStorage.getItem(key);
-
-    if (saved) {
-      showFrame(saved);
-    }
-
-    function launch() {
-      let url = document.getElementById('target-url').value.trim();
-      if (!url) return;
-      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-      localStorage.setItem(key, url);
-      showFrame(url);
-    }
-
-    function showFrame(url) {
-      document.getElementById('setup').style.display = 'none';
-      const frame = document.getElementById('frame');
-      frame.src = url;
-      frame.style.display = 'block';
-    }
-
-    function resetUrl() {
-      localStorage.removeItem(key);
-      location.reload();
-    }
+    // Jika dibuka langsung dari shortcut PWA / homescreen, langsung dialihkan
+    window.addEventListener('DOMContentLoaded', () => {
+      // Tunggu 500ms agar engine browser siap lalu redirect langsung
+      setTimeout(() => {
+        window.location.replace(TARGET_URL);
+      }, 500);
+    });
   </script>
 </body>
 </html>
