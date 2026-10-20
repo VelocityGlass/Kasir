@@ -2,165 +2,65 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Memaksa Chrome HP merender tampilan desktop penuh (1280px) -->
-  <meta name="viewport" content="width=1280, initial-scale=0.3, maximum-scale=2.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kasir</title>
-
-  <!-- Konfigurasi PWA -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#121212">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" type="image/png" href="icon-512.png">
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #121212;
-      font-family: Arial, sans-serif;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-    }
-    #setup-modal {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 9999;
-    }
-    .modal-box {
-      background: #1e1e1e;
-      padding: 30px;
-      border-radius: 12px;
-      width: 480px;
-      text-align: center;
-      color: #fff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    }
-    .modal-box h2 {
-      margin-bottom: 12px;
-      font-size: 22px;
-    }
-    .modal-box p {
-      font-size: 14px;
-      color: #aaa;
-      margin-bottom: 20px;
-    }
-    .modal-box input {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #2a2a2a;
-      color: #fff;
-      font-size: 15px;
-      outline: none;
-      margin-bottom: 15px;
-    }
-    .modal-box button {
-      width: 100%;
-      padding: 12px;
-      background: #0d6efd;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #btn-setting {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      font-size: 18px;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9998;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #121212; overflow: hidden; font-family: sans-serif; }
+    #setup { display: flex; height: 100%; align-items: center; justify-content: center; padding: 20px; }
+    .box { background: #222; padding: 24px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; color: #fff; }
+    input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #444; background: #333; color: #fff; font-size: 16px; }
+    button { width: 100%; padding: 12px; background: #0d6efd; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; }
+    iframe { width: 100%; height: 100%; border: none; display: none; }
+    #gear { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; background: #fff; border-radius: 50%; width: 30px; height: 30px; border: none; font-size: 14px; }
   </style>
 </head>
 <body>
 
-  <div id="setup-modal">
-    <div class="modal-box">
-      <h2>Hubungkan Aplikasi</h2>
-      <p>Masukkan link tujuan. URL akan disimpan di browser ini.</p>
-      <input type="url" id="app-url" placeholder="https://...">
-      <button onclick="saveAndLaunch()">Buka Aplikasi</button>
+  <div id="setup">
+    <div class="box">
+      <h3>Masukkan URL Web</h3>
+      <input type="url" id="target-url" placeholder="https://...">
+      <button onclick="launch()">Buka</button>
     </div>
   </div>
 
-  <iframe id="main-frame" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen" allowfullscreen></iframe>
-
-  <button id="btn-setting" onclick="openSetting()" title="Ganti URL">⚙</button>
+  <iframe id="frame" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-modals"></iframe>
+  <button id="gear" onclick="resetUrl()">⚙</button>
 
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
+      navigator.serviceWorker.register('./sw.js');
     }
 
-    const STORAGE_KEY = 'target_fullscreen_url';
-    const modal = document.getElementById('setup-modal');
-    const iframe = document.getElementById('main-frame');
-    const urlInput = document.getElementById('app-url');
-    const btnSetting = document.getElementById('btn-setting');
+    const key = 'app_direct_url';
+    const saved = localStorage.getItem(key);
 
-    function init() {
-      const savedUrl = localStorage.getItem(STORAGE_KEY);
-      if (savedUrl) {
-        launchFrame(savedUrl);
-      } else {
-        modal.style.display = 'flex';
-      }
+    if (saved) {
+      showFrame(saved);
     }
 
-    function saveAndLaunch() {
-      let url = urlInput.value.trim();
+    function launch() {
+      let url = document.getElementById('target-url').value.trim();
       if (!url) return;
-      if (!/^https?:\/\//i.test(url)) {
-        url = 'https://' + url;
-      }
-      localStorage.setItem(STORAGE_KEY, url);
-      launchFrame(url);
+      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+      localStorage.setItem(key, url);
+      showFrame(url);
     }
 
-    function launchFrame(url) {
-      modal.style.display = 'none';
-      iframe.src = url;
-      iframe.style.display = 'block';
-      btnSetting.style.display = 'flex';
+    function showFrame(url) {
+      document.getElementById('setup').style.display = 'none';
+      const frame = document.getElementById('frame');
+      frame.src = url;
+      frame.style.display = 'block';
     }
 
-    function openSetting() {
-      urlInput.value = localStorage.getItem(STORAGE_KEY) || '';
-      modal.style.display = 'flex';
+    function resetUrl() {
+      localStorage.removeItem(key);
+      location.reload();
     }
-
-    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
