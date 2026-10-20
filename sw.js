@@ -1,12 +1,14 @@
-self.addEventListener('install', (e) => {
+const CACHE_NAME = 'kasir-pwa-v1';
+
+self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(clients.claim());
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
 });
 
-self.addEventListener('fetch', (e) => {
-  // Pass-through request agar iframe tetap berjalan normal
-  e.respondWith(fetch(e.request).catch(() => new Response('Offline')));
+self.addEventListener('fetch', (event) => {
+  // Biarkan request lewat normal tanpa mengganggu komunikasi GAS
+  event.respondWith(fetch(event.request).catch(() => new Response('Offline')));
 });
