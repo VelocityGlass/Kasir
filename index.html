@@ -2,9 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Memaksa browser HP membuka dalam mode desktop (lebar virtual 1280px) -->
   <meta name="viewport" content="width=1280, initial-scale=0.3, maximum-scale=2.0, user-scalable=yes">
-  <title>App</title>
+  <title>App Shell</title>
   <style>
     * {
       margin: 0;
@@ -15,24 +14,147 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #000;
+      background-color: #121212;
+      font-family: Arial, sans-serif;
     }
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-      display: block;
+      display: none;
+    }
+    /* Modal Input Setup */
+    #setup-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+    }
+    .modal-box {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .modal-box h2 {
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+    .modal-box p {
+      font-size: 14px;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+    .modal-box input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      margin-bottom: 15px;
+    }
+    .modal-box input:focus {
+      border-color: #0d6efd;
+    }
+    .modal-box button {
+      width: 100%;
+      padding: 12px;
+      background: #0d6efd;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    /* Tombol Setting Mengambang (Transparan di Sudut Kanan Bawah) */
+    #btn-setting {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
 <body>
 
-  <!-- Masukkan link tujuan Anda pada atribut src di bawah -->
-  <iframe 
-    src="https://example.com" 
-    allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen"
-    allowfullscreen>
-  </iframe>
+  <!-- Modal Konfigurasi Link -->
+  <div id="setup-modal">
+    <div class="modal-box">
+      <h2>Hubungkan Aplikasi</h2>
+      <p>Masukkan URL WebApp / situs tujuan. Link akan tersimpan otomatis di perangkat ini.</p>
+      <input type="url" id="app-url" placeholder="https://script.google.com/... atau URL lain">
+      <button onclick="saveAndLaunch()">Buka Aplikasi</button>
+    </div>
+  </div>
 
+  <!-- Frame Konten Penuh -->
+  <iframe id="main-frame" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen" allowfullscreen></iframe>
+
+  <!-- Tombol Ganti Link -->
+  <button id="btn-setting" onclick="openSetting()" title="Ganti URL">⚙</button>
+
+  <script>
+    const STORAGE_KEY = 'target_fullscreen_url';
+    const modal = document.getElementById('setup-modal');
+    const iframe = document.getElementById('main-frame');
+    const urlInput = document.getElementById('app-url');
+    const btnSetting = document.getElementById('btn-setting');
+
+    function init() {
+      const savedUrl = localStorage.getItem(STORAGE_KEY);
+      if (savedUrl) {
+        launchFrame(savedUrl);
+      } else {
+        modal.style.display = 'flex';
+      }
+    }
+
+    function saveAndLaunch() {
+      let url = urlInput.value.trim();
+      if (!url) return;
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+      localStorage.setItem(STORAGE_KEY, url);
+      launchFrame(url);
+    }
+
+    function launchFrame(url) {
+      modal.style.display = 'none';
+      iframe.src = url;
+      iframe.style.display = 'block';
+      btnSetting.style.display = 'flex';
+    }
+
+    function openSetting() {
+      urlInput.value = localStorage.getItem(STORAGE_KEY) || '';
+      modal.style.display = 'flex';
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
