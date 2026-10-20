@@ -2,52 +2,40 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1024, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
-  <title>Smart POS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velocity Kasir</title>
 
-  <!-- PWA Manifest & Meta Tags -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#121212">
+  <meta name="theme-color" content="#00454f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
-      background-color: #121212;
+      background-color: #00454f;
       overflow: hidden;
-      -webkit-overflow-scrolling: touch;
     }
-    #pos-frame {
+    iframe {
       width: 100%;
       height: 100%;
-      border: 0;
+      border: none;
       display: block;
-      /* Memastikan seluruh sentuhan langsung diterima oleh iframe */
-      pointer-events: auto !important;
-      touch-action: auto !important;
     }
   </style>
 </head>
 <body>
 
   <iframe 
-    id="pos-frame" 
     src="https://script.google.com/macros/s/AKfycbxWifql7ClYcw9s2Yxbq7kQOeoJm2wDMrWFwZedTTrl-vW11vm0RE8M11p1kKu8oAjt/exec"
-    allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen"
-    allowfullscreen>
+    allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen">
   </iframe>
 
   <script>
-    // Hanya registrasi Service Worker agar PWA valid
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
   </script>
 </body>
