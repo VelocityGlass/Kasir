@@ -2,8 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <!-- Memaksa Chrome HP merender tampilan desktop penuh (1280px) -->
   <meta name="viewport" content="width=1280, initial-scale=0.3, maximum-scale=2.0, user-scalable=yes">
-  <title>App Shell</title>
+  <title>Kasir</title>
+
+  <!-- Konfigurasi PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#121212">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" href="icon-512.png">
+
   <style>
     * {
       margin: 0;
@@ -23,7 +33,6 @@
       border: none;
       display: none;
     }
-    /* Modal Input Setup */
     #setup-modal {
       position: fixed;
       inset: 0;
@@ -37,15 +46,14 @@
       background: #1e1e1e;
       padding: 30px;
       border-radius: 12px;
-      width: 90%;
-      max-width: 500px;
+      width: 480px;
       text-align: center;
       color: #fff;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     }
     .modal-box h2 {
       margin-bottom: 12px;
-      font-size: 20px;
+      font-size: 22px;
     }
     .modal-box p {
       font-size: 14px;
@@ -63,9 +71,6 @@
       outline: none;
       margin-bottom: 15px;
     }
-    .modal-box input:focus {
-      border-color: #0d6efd;
-    }
     .modal-box button {
       width: 100%;
       padding: 12px;
@@ -77,7 +82,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-    /* Tombol Setting Mengambang (Transparan di Sudut Kanan Bawah) */
     #btn-setting {
       position: fixed;
       bottom: 15px;
@@ -94,29 +98,31 @@
       align-items: center;
       justify-content: center;
       z-index: 9998;
-      backdrop-filter: blur(4px);
     }
   </style>
 </head>
 <body>
 
-  <!-- Modal Konfigurasi Link -->
   <div id="setup-modal">
     <div class="modal-box">
       <h2>Hubungkan Aplikasi</h2>
-      <p>Masukkan URL WebApp / situs tujuan. Link akan tersimpan otomatis di perangkat ini.</p>
-      <input type="url" id="app-url" placeholder="https://script.google.com/... atau URL lain">
+      <p>Masukkan link tujuan. URL akan disimpan di browser ini.</p>
+      <input type="url" id="app-url" placeholder="https://...">
       <button onclick="saveAndLaunch()">Buka Aplikasi</button>
     </div>
   </div>
 
-  <!-- Frame Konten Penuh -->
   <iframe id="main-frame" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen" allowfullscreen></iframe>
 
-  <!-- Tombol Ganti Link -->
   <button id="btn-setting" onclick="openSetting()" title="Ganti URL">⚙</button>
 
   <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
     const STORAGE_KEY = 'target_fullscreen_url';
     const modal = document.getElementById('setup-modal');
     const iframe = document.getElementById('main-frame');
