@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Velocity Kasir</title>
 
-  <!-- PWA Settings -->
+  <!-- PWA Manifest & Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#121212">
   <meta name="mobile-web-app-capable" content="yes">
@@ -19,71 +19,90 @@
       background-color: #121212;
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 20px;
+      padding: 24px;
     }
     .logo {
-      width: 90px;
-      height: 90px;
-      border-radius: 20px;
+      width: 100px;
+      height: 100px;
+      border-radius: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      object-fit: contain;
+      background: #fff;
+      padding: 8px;
     }
-    h1 { font-size: 22px; margin-bottom: 8px; font-weight: 600; }
-    p { font-size: 14px; color: #888; margin-bottom: 25px; }
+    h1 { font-size: 24px; margin-bottom: 8px; font-weight: bold; }
+    p { font-size: 14px; color: #aaa; margin-bottom: 30px; max-width: 320px; line-height: 1.5; }
+    
     .btn {
-      display: inline-block;
-      padding: 14px 32px;
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      margin-bottom: 12px;
+    }
+    .btn-install {
+      background-color: #28a745;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.35);
+    }
+    .btn-open {
       background-color: #0d6efd;
       color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
-      transition: background 0.2s;
-    }
-    .btn:active { background-color: #0b5ed7; }
-    .footer-note {
-      position: absolute;
-      bottom: 25px;
-      font-size: 12px;
-      color: #555;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.35);
     }
   </style>
 </head>
 <body>
 
-  <img src="icon-512.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+  <img src="icon-512.png" alt="Logo" class="logo">
   <h1>Velocity Kasir</h1>
-  <p>Memuat sistem kasir POS...</p>
+  <p>Instal aplikasi ini ke layar utama HP Anda untuk akses cepat dan clean.</p>
 
-  <a id="btn-open" class="btn" href="#">Buka Aplikasi Kasir</a>
-
-  <div class="footer-note">Mode Desktop Clean</div>
+  <!-- Tombol Instal Otomatis PWA -->
+  <button id="btn-install" class="btn btn-install" style="display: none;">📲 Instal Aplikasi Sekarang</button>
+  
+  <!-- Tombol Buka Langsung -->
+  <a id="btn-open" class="btn btn-open" href="https://script.google.com/macros/s/AKfycbxWifql7ClYcw9s2Yxbq7kQOeoJm2wDMrWFwZedTTrl-vW11vm0RE8M11p1kKu8oAjt/exec" target="_blank">🚀 Buka WebApp Kasir</a>
 
   <script>
-    // URL WebApp Google Apps Script Anda
-    const TARGET_URL = "https://script.google.com/macros/s/AKfycbxWifql7ClYcw9s2Yxbq7kQOeoJm2wDMrWFwZedTTrl-vW11vm0RE8M11p1kKu8oAjt/exec";
-
-    document.getElementById('btn-open').href = TARGET_URL;
-
-    // Registrasi PWA Service Worker
+    // Registrasi Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(console.error);
+      });
     }
 
-    // Jika dibuka langsung dari shortcut PWA / homescreen, langsung dialihkan
-    window.addEventListener('DOMContentLoaded', () => {
-      // Tunggu 500ms agar engine browser siap lalu redirect langsung
-      setTimeout(() => {
-        window.location.replace(TARGET_URL);
-      }, 500);
+    // Tangkap event PWA install prompt dari Chrome
+    let deferredPrompt;
+    const installBtn = document.getElementById('btn-install');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+      }
+      deferredPrompt = null;
     });
   </script>
 </body>
