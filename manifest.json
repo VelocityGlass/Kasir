@@ -2,8 +2,10 @@
   "name": "Velocity Kasir",
   "short_name": "Kasir",
   "start_url": "/Kasir/",
-  "scope": "/Kasir/",
-  "display": "standalone",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
   "background_color": "#121212",
   "theme_color": "#121212",
   "icons": [
