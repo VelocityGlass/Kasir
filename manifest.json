@@ -1,8 +1,8 @@
 {
   "name": "Velocity Kasir",
   "short_name": "Kasir",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/Kasir/",
+  "scope": "/Kasir/",
   "display": "standalone",
   "orientation": "landscape",
   "background_color": "#121212",
