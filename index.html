@@ -11,7 +11,6 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" type="image/png" href="icon-512.png">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,18 +26,25 @@
       text-align: center;
       padding: 24px;
     }
-    .logo {
-      width: 100px;
-      height: 100px;
-      border-radius: 22px;
+    .logo-box {
+      width: 90px;
+      height: 90px;
+      background: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-      object-fit: contain;
-      background: #fff;
-      padding: 8px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
     }
-    h1 { font-size: 24px; margin-bottom: 8px; font-weight: bold; }
-    p { font-size: 14px; color: #aaa; margin-bottom: 30px; max-width: 320px; line-height: 1.5; }
+    .logo-box svg {
+      width: 50px;
+      height: 50px;
+      fill: #0d6efd;
+    }
+    h1 { font-size: 22px; font-weight: bold; margin-bottom: 8px; }
+    p { font-size: 14px; color: #888; margin-bottom: 25px; max-width: 300px; line-height: 1.4; }
     
     .btn {
       display: block;
@@ -55,55 +61,75 @@
     }
     .btn-install {
       background-color: #28a745;
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.35);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
     }
     .btn-open {
       background-color: #0d6efd;
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.35);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+    }
+    #status-msg {
+      font-size: 12px;
+      color: #ffc107;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
 
-  <img src="icon-512.png" alt="Logo" class="logo">
-  <h1>Velocity Kasir</h1>
-  <p>Instal aplikasi ini ke layar utama HP Anda untuk akses cepat dan clean.</p>
+  <!-- Logo SVG bawaan agar tidak pernah broken -->
+  <div class="logo-box">
+    <svg viewBox="0 0 24 24">
+      <path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-2 0H3V6h14v8zm4-7v11c0 1.1-.9 2-2 2H4v-2h15V7h2zM7 10h4v2H7v-2z"/>
+    </svg>
+  </div>
 
-  <!-- Tombol Instal Otomatis PWA -->
-  <button id="btn-install" class="btn btn-install" style="display: none;">📲 Instal Aplikasi Sekarang</button>
+  <h1>Velocity Kasir</h1>
+  <p>Aplikasi Kasir POS Clean Mode</p>
+
+  <!-- Tombol Pasang Aplikasi Langsung -->
+  <button id="btn-install" class="btn btn-install" onclick="triggerInstall()">📲 Pasang Aplikasi (Instal)</button>
   
-  <!-- Tombol Buka Langsung -->
-  <a id="btn-open" class="btn btn-open" href="https://script.google.com/macros/s/AKfycbxWifql7ClYcw9s2Yxbq7kQOeoJm2wDMrWFwZedTTrl-vW11vm0RE8M11p1kKu8oAjt/exec" target="_blank">🚀 Buka WebApp Kasir</a>
+  <!-- Tombol Buka WebApp -->
+  <a class="btn btn-open" href="https://script.google.com/macros/s/AKfycbxWifql7ClYcw9s2Yxbq7kQOeoJm2wDMrWFwZedTTrl-vW11vm0RE8M11p1kKu8oAjt/exec" target="_blank">🚀 Buka WebApp Kasir</a>
+
+  <div id="status-msg"></div>
 
   <script>
-    // Registrasi Service Worker
+    let deferredPrompt = null;
+    const btnInstall = document.getElementById('btn-install');
+    const statusMsg = document.getElementById('status-msg');
+
+    // Daftarkan Service Worker
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(console.error);
+      navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('SW Registered');
+      }).catch(err => {
+        statusMsg.innerText = 'Service Worker error: ' + err;
       });
     }
 
-    // Tangkap event PWA install prompt dari Chrome
-    let deferredPrompt;
-    const installBtn = document.getElementById('btn-install');
-
+    // Dengarkan event dari Chrome
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.style.display = 'block';
+      statusMsg.innerText = 'Aplikasi siap dipasang!';
     });
 
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        installBtn.style.display = 'none';
+    async function triggerInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          statusMsg.innerText = 'Aplikasi berhasil dipasang!';
+        }
+        deferredPrompt = null;
+      } else {
+        // Jika browser belum trigger prompt otomatis
+        alert("Tekan titik tiga (⋮) di pojok kanan atas Chrome, lalu pilih 'Instal aplikasi' atau 'Tambahkan ke Layar Utama'.");
       }
-      deferredPrompt = null;
-    });
+    }
   </script>
 </body>
 </html>
